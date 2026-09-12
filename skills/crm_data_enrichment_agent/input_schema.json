@@ -1,0 +1,637 @@
+{
+  "title": "CRM Data Enrichment Agent Input",
+  "description": "Configure the CRM data enrichment process: choose contact source, field mapping, limits, enrichment providers, crawling and scoring options.",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "contactsSource": {
+      "sectionCaption": "Contact source",
+      "title": "Contact source",
+      "description": "Where to load contacts from: JSON input, CSV text, or an Apify dataset ID.",
+      "type": "string",
+      "enum": [
+        "json",
+        "csv",
+        "dataset"
+      ],
+      "default": "json",
+      "editor": "select"
+    },
+    "contactsJson": {
+      "title": "Contacts (JSON)",
+      "description": "Array of contact objects when source is 'json'. Each object should have at least an email; optional fields: firstName, lastName, company, phone.",
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": [],
+      "prefill": [
+        {
+          "email": "john.doe@example.com",
+          "firstName": "John",
+          "lastName": "Doe",
+          "company": "Example Inc"
+        },
+        {
+          "email": "jane.smith@example.com",
+          "firstName": "Jane",
+          "lastName": "Smith",
+          "company": "Acme Corp"
+        }
+      ],
+      "editor": "json"
+    },
+    "contactsCsv": {
+      "title": "Contacts (CSV)",
+      "description": "CSV string with headers when source is 'csv'. First row must be header names; use the field mapping options to match column names.",
+      "type": "string",
+      "default": "",
+      "editor": "textarea"
+    },
+    "datasetId": {
+      "title": "Dataset ID",
+      "description": "Apify dataset ID when source is 'dataset'. The Actor will read items from this dataset up to the maximum contacts limit.",
+      "type": "string",
+      "default": "",
+      "editor": "textfield"
+    },
+    "emailField": {
+      "sectionCaption": "Field mapping",
+      "title": "Email field name",
+      "description": "Property or column name for the contact's email in your data.",
+      "type": "string",
+      "default": "email",
+      "editor": "textfield"
+    },
+    "firstNameField": {
+      "title": "First name field",
+      "description": "Property or column name for first name (optional).",
+      "type": "string",
+      "default": "firstName",
+      "editor": "textfield"
+    },
+    "lastNameField": {
+      "title": "Last name field",
+      "description": "Property or column name for last name (optional).",
+      "type": "string",
+      "default": "lastName",
+      "editor": "textfield"
+    },
+    "companyField": {
+      "title": "Company field",
+      "description": "Property or column name for company (optional).",
+      "type": "string",
+      "default": "company",
+      "editor": "textfield"
+    },
+    "maxContacts": {
+      "sectionCaption": "Limits",
+      "title": "Maximum contacts",
+      "description": "Maximum number of contacts to process. Earlier contacts are processed first.",
+      "type": "integer",
+      "default": 500,
+      "minimum": 1,
+      "maximum": 10000,
+      "editor": "number"
+    },
+    "dedupeKeys": {
+      "sectionCaption": "Deduplication",
+      "title": "Deduplication keys",
+      "description": "Keys used to identify duplicates. Allowed: email, domain, companyNameNormalized, firstName, lastName. Add one key per line or use the JSON editor.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "editor": "stringList",
+      "default": [
+        "email",
+        "domain"
+      ],
+      "prefill": [
+        "email",
+        "domain"
+      ]
+    },
+    "enrichment": {
+      "sectionCaption": "Enrichment settings",
+      "title": "Enrichment settings",
+      "description": "Configure enrichment providers: website fallback (no API key), Clearbit, and Hunter.",
+      "type": "object",
+      "editor": "schemaBased",
+      "properties": {
+        "enableWebsiteFallback": {
+          "title": "Enable website fallback",
+          "description": "Fetch company websites for light enrichment (no API key required).",
+          "type": "boolean",
+          "default": true
+        },
+        "enableClearbit": {
+          "title": "Enable Clearbit",
+          "description": "Use Clearbit API for enrichment. Requires Clearbit API key.",
+          "type": "boolean",
+          "default": false
+        },
+        "clearbitApiKey": {
+          "title": "Clearbit API key",
+          "description": "Your Clearbit API key.",
+          "type": "string",
+          "default": "",
+          "editor": "textfield"
+        },
+        "enableHunter": {
+          "title": "Enable Hunter",
+          "description": "Use Hunter API for email finding. Requires Hunter API key.",
+          "type": "boolean",
+          "default": false
+        },
+        "hunterApiKey": {
+          "title": "Hunter API key",
+          "description": "Your Hunter API key.",
+          "type": "string",
+          "default": "",
+          "editor": "textfield"
+        }
+      },
+      "default": {
+        "enableWebsiteFallback": true,
+        "enableClearbit": false,
+        "clearbitApiKey": "",
+        "enableHunter": false,
+        "hunterApiKey": ""
+      }
+    },
+    "crawling": {
+      "sectionCaption": "Crawling settings",
+      "title": "Crawling settings",
+      "description": "HTTP request settings: rate limit (global across website, Clearbit, and Hunter), timeout, retries, and concurrency.",
+      "type": "object",
+      "editor": "schemaBased",
+      "properties": {
+        "maxRequestsPerMinute": {
+          "title": "Max requests per minute",
+          "description": "Global rate limit for all enrichment requests (website, Clearbit, Hunter) combined.",
+          "type": "integer",
+          "default": 60,
+          "minimum": 1,
+          "maximum": 1000,
+          "editor": "number"
+        },
+        "requestTimeoutSecs": {
+          "title": "Request timeout (seconds)",
+          "description": "HTTP request timeout in seconds.",
+          "type": "integer",
+          "default": 12,
+          "minimum": 5,
+          "maximum": 120,
+          "editor": "number"
+        },
+        "maxRetries": {
+          "title": "Max retries",
+          "description": "Number of retries on failed requests.",
+          "type": "integer",
+          "default": 2,
+          "minimum": 0,
+          "maximum": 10,
+          "editor": "number"
+        },
+        "maxConcurrency": {
+          "title": "Max concurrency",
+          "description": "Maximum concurrent requests.",
+          "type": "integer",
+          "default": 10,
+          "minimum": 1,
+          "maximum": 100,
+          "editor": "number"
+        },
+        "useProxy": {
+          "title": "Use proxy (Tier 2)",
+          "description": "When website fetch is blocked (403/429), retry with Apify Proxy (residential/rotating).",
+          "type": "boolean",
+          "default": false,
+          "editor": "checkbox"
+        },
+        "usePlaywrightFallback": {
+          "title": "Use Playwright fallback (Tier 3)",
+          "description": "When proxy fails, try headless browser (Playwright). Requires Playwright optional dependency.",
+          "type": "boolean",
+          "default": false,
+          "editor": "checkbox"
+        }
+      },
+      "default": {
+        "maxRequestsPerMinute": 60,
+        "requestTimeoutSecs": 12,
+        "maxRetries": 2,
+        "maxConcurrency": 10,
+        "useProxy": false,
+        "usePlaywrightFallback": false
+      }
+    },
+    "scoring": {
+      "sectionCaption": "Scoring settings",
+      "title": "Scoring settings",
+      "description": "Configure contact quality scoring. Weights should sum to about 1.0.",
+      "type": "object",
+      "editor": "schemaBased",
+      "properties": {
+        "enabled": {
+          "title": "Enable scoring",
+          "description": "Calculate quality scores for each contact.",
+          "type": "boolean",
+          "default": true
+        },
+        "emailValid": {
+          "title": "Email valid weight",
+          "description": "Weight for valid email in the score (0-1).",
+          "type": "number",
+          "default": 0.25,
+          "minimum": 0,
+          "maximum": 1,
+          "editor": "number"
+        },
+        "hasWebsite": {
+          "title": "Has website weight",
+          "description": "Weight for having website data in the score (0-1).",
+          "type": "number",
+          "default": 0.2,
+          "minimum": 0,
+          "maximum": 1,
+          "editor": "number"
+        },
+        "hasPhone": {
+          "title": "Has phone weight",
+          "description": "Weight for having phone number in the score (0-1).",
+          "type": "number",
+          "default": 0.15,
+          "minimum": 0,
+          "maximum": 1,
+          "editor": "number"
+        },
+        "hasSocial": {
+          "title": "Has social weight",
+          "description": "Weight for having social links in the score (0-1).",
+          "type": "number",
+          "default": 0.15,
+          "minimum": 0,
+          "maximum": 1,
+          "editor": "number"
+        },
+        "companySignals": {
+          "title": "Company signals weight",
+          "description": "Weight for company enrichment signals in the score (0-1).",
+          "type": "number",
+          "default": 0.25,
+          "minimum": 0,
+          "maximum": 1,
+          "editor": "number"
+        },
+        "weights": {
+          "title": "Legacy weights object",
+          "description": "Legacy input compatibility only. Use individual scoring fields above.",
+          "type": "object",
+          "editor": "hidden",
+          "default": {
+            "emailValid": 0.25,
+            "hasWebsite": 0.2,
+            "hasPhone": 0.15,
+            "hasSocial": 0.15,
+            "companySignals": 0.25
+          }
+        }
+      },
+      "default": {
+        "enabled": true,
+        "emailValid": 0.25,
+        "hasWebsite": 0.2,
+        "hasPhone": 0.15,
+        "hasSocial": 0.15,
+        "companySignals": 0.25
+      }
+    },
+    "integrations": {
+      "sectionCaption": "Integrations",
+      "title": "Integrations",
+      "description": "Send run summary/results to n8n, OpenClaw, or a generic webhook endpoint after processing completes.",
+      "type": "object",
+      "editor": "schemaBased",
+      "properties": {
+        "enableWebhook": {
+          "title": "Enable generic webhook",
+          "description": "Send payload to a custom webhook URL.",
+          "type": "boolean",
+          "default": false
+        },
+        "webhookUrl": {
+          "title": "Generic webhook URL",
+          "description": "HTTPS endpoint for generic webhook delivery.",
+          "type": "string",
+          "default": "",
+          "editor": "textfield"
+        },
+        "webhookSecret": {
+          "title": "Webhook signing secret",
+          "description": "Optional HMAC SHA256 secret for X-Webhook-Signature header.",
+          "type": "string",
+          "default": "",
+          "editor": "textfield"
+        },
+        "payloadMode": {
+          "title": "Payload mode",
+          "description": "Choose whether webhook payload includes summary, full results, or both.",
+          "type": "string",
+          "enum": [
+            "summary",
+            "results",
+            "both"
+          ],
+          "default": "summary",
+          "editor": "select"
+        },
+        "webhookTimeoutMs": {
+          "title": "Webhook timeout (ms)",
+          "description": "HTTP timeout for webhook requests.",
+          "type": "integer",
+          "default": 10000,
+          "minimum": 1000,
+          "maximum": 120000,
+          "editor": "number"
+        },
+        "webhookMaxRetries": {
+          "title": "Webhook max retries",
+          "description": "Retry attempts for failed webhook requests.",
+          "type": "integer",
+          "default": 2,
+          "minimum": 0,
+          "maximum": 10,
+          "editor": "number"
+        },
+        "webhookRetryDelayMs": {
+          "title": "Webhook retry delay (ms)",
+          "description": "Base delay between webhook retry attempts.",
+          "type": "integer",
+          "default": 1000,
+          "minimum": 100,
+          "maximum": 60000,
+          "editor": "number"
+        },
+        "enableN8n": {
+          "title": "Enable n8n webhook",
+          "description": "Send payload to an n8n webhook endpoint.",
+          "type": "boolean",
+          "default": false
+        },
+        "n8nWebhookUrl": {
+          "title": "n8n webhook URL",
+          "description": "n8n incoming webhook URL.",
+          "type": "string",
+          "default": "",
+          "editor": "textfield"
+        },
+        "n8nApiKey": {
+          "title": "n8n API key (optional)",
+          "description": "Optional X-N8N-API-KEY header value.",
+          "type": "string",
+          "default": "",
+          "editor": "textfield"
+        },
+        "enableOpenClaw": {
+          "title": "Enable OpenClaw webhook",
+          "description": "Send payload to an OpenClaw webhook endpoint.",
+          "type": "boolean",
+          "default": false
+        },
+        "openClawWebhookUrl": {
+          "title": "OpenClaw webhook URL",
+          "description": "OpenClaw webhook endpoint URL.",
+          "type": "string",
+          "default": "",
+          "editor": "textfield"
+        },
+        "openClawApiKey": {
+          "title": "OpenClaw API key (optional)",
+          "description": "Optional X-API-KEY header value.",
+          "type": "string",
+          "default": "",
+          "editor": "textfield"
+        },
+        "highScoreWebhookUrl": {
+          "title": "High-score route URL",
+          "description": "Optional route: send high-score contacts to this webhook URL.",
+          "type": "string",
+          "default": "",
+          "editor": "textfield"
+        },
+        "failedWebhookUrl": {
+          "title": "Failed route URL",
+          "description": "Optional route: send failed contacts to this webhook URL.",
+          "type": "string",
+          "default": "",
+          "editor": "textfield"
+        },
+        "highScoreThreshold": {
+          "title": "High-score threshold",
+          "description": "Minimum score for high-score route.",
+          "type": "integer",
+          "default": 75,
+          "minimum": 0,
+          "maximum": 100,
+          "editor": "number"
+        }
+      },
+      "default": {
+        "enableWebhook": false,
+        "webhookUrl": "",
+        "webhookSecret": "",
+        "payloadMode": "summary",
+        "webhookTimeoutMs": 10000,
+        "webhookMaxRetries": 2,
+        "webhookRetryDelayMs": 1000,
+        "enableN8n": false,
+        "n8nWebhookUrl": "",
+        "n8nApiKey": "",
+        "enableOpenClaw": false,
+        "openClawWebhookUrl": "",
+        "openClawApiKey": "",
+        "highScoreWebhookUrl": "",
+        "failedWebhookUrl": "",
+        "highScoreThreshold": 75
+      }
+    },
+    "intelligence": {
+      "sectionCaption": "Intelligence & efficiency",
+      "title": "Intelligence & efficiency",
+      "description": "Advanced controls for adaptive enrichment, caching, AI fallback, learning memory, routing intelligence, and cost guardrails.",
+      "type": "object",
+      "editor": "schemaBased",
+      "properties": {
+        "adaptiveEnrichment": {
+          "title": "Adaptive enrichment",
+          "description": "Skip paid providers when confidence is already high.",
+          "type": "boolean",
+          "default": true
+        },
+        "minConfidenceForApiEnrichment": {
+          "title": "Min confidence for paid APIs",
+          "description": "If confidence is >= this value, adaptive mode skips paid APIs.",
+          "type": "integer",
+          "default": 70,
+          "minimum": 0,
+          "maximum": 100,
+          "editor": "number"
+        },
+        "enableDomainCache": {
+          "title": "Enable domain cache",
+          "description": "Reuse domain-level enrichment across contacts/runs.",
+          "type": "boolean",
+          "default": true
+        },
+        "cacheTtlHours": {
+          "title": "Cache TTL (hours)",
+          "description": "How long cached domain enrichments stay valid.",
+          "type": "integer",
+          "default": 24,
+          "minimum": 1,
+          "maximum": 720,
+          "editor": "number"
+        },
+        "aiFallbackMode": {
+          "title": "AI fallback mode",
+          "description": "Fallback when extraction is weak: off, local heuristic, or webhook.",
+          "type": "string",
+          "enum": [
+            "off",
+            "heuristic",
+            "webhook"
+          ],
+          "default": "heuristic",
+          "editor": "select"
+        },
+        "aiFallbackWebhookUrl": {
+          "title": "AI fallback webhook URL",
+          "description": "Used only when AI fallback mode is 'webhook'.",
+          "type": "string",
+          "default": "",
+          "editor": "textfield"
+        },
+        "progressivePipeline": {
+          "title": "Progressive pipeline",
+          "description": "Limit paid APIs to top confidence band of contacts.",
+          "type": "boolean",
+          "default": true
+        },
+        "maxApiEnrichmentPercent": {
+          "title": "Top contacts for paid APIs (%)",
+          "description": "Only this percentage of contacts are eligible for paid APIs.",
+          "type": "integer",
+          "default": 30,
+          "minimum": 1,
+          "maximum": 100,
+          "editor": "number"
+        },
+        "enableConfidenceExplainability": {
+          "title": "Enable confidence explainability",
+          "description": "Attach confidence score, breakdown, and reasons per contact.",
+          "type": "boolean",
+          "default": true
+        },
+        "enableDomainLearning": {
+          "title": "Enable domain learning",
+          "description": "Persist domain allow/block learning across runs.",
+          "type": "boolean",
+          "default": true
+        },
+        "learningBlockThreshold": {
+          "title": "Learning block threshold",
+          "description": "Mark domain as blocklisted after this many failures.",
+          "type": "integer",
+          "default": 5,
+          "minimum": 1,
+          "maximum": 50,
+          "editor": "number"
+        },
+        "learningAllowThreshold": {
+          "title": "Learning allow threshold",
+          "description": "Mark domain as allowlisted after this many successes.",
+          "type": "integer",
+          "default": 3,
+          "minimum": 1,
+          "maximum": 50,
+          "editor": "number"
+        },
+        "smartRetry": {
+          "title": "Smart retry",
+          "description": "Use exponential backoff + jitter for outbound integrations.",
+          "type": "boolean",
+          "default": true
+        },
+        "budgetGuardrails": {
+          "title": "Enable budget guardrails",
+          "description": "Cap paid provider calls per run.",
+          "type": "boolean",
+          "default": false
+        },
+        "maxExternalApiCalls": {
+          "title": "Max external API calls",
+          "description": "Hard cap for Clearbit + Hunter calls in a run.",
+          "type": "integer",
+          "default": 1000,
+          "minimum": 1,
+          "maximum": 100000,
+          "editor": "number"
+        }
+      },
+      "default": {
+        "adaptiveEnrichment": true,
+        "minConfidenceForApiEnrichment": 70,
+        "enableDomainCache": true,
+        "cacheTtlHours": 24,
+        "aiFallbackMode": "heuristic",
+        "aiFallbackWebhookUrl": "",
+        "progressivePipeline": true,
+        "maxApiEnrichmentPercent": 30,
+        "enableConfidenceExplainability": true,
+        "enableDomainLearning": true,
+        "learningBlockThreshold": 5,
+        "learningAllowThreshold": 3,
+        "smartRetry": true,
+        "budgetGuardrails": false,
+        "maxExternalApiCalls": 1000
+      }
+    },
+    "output": {
+      "sectionCaption": "Output settings",
+      "title": "Output settings",
+      "description": "Configure how results are written to the dataset and key-value store.",
+      "type": "object",
+      "editor": "schemaBased",
+      "properties": {
+        "pushPartialResultsEvery": {
+          "title": "Push results every N contacts",
+          "description": "Stream results to the dataset in batches of this size.",
+          "type": "integer",
+          "default": 50,
+          "minimum": 1,
+          "maximum": 500,
+          "editor": "number"
+        },
+        "saveDebugArtifacts": {
+          "title": "Save debug artifacts",
+          "description": "Store HTML snippets for debugging in the key-value store.",
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "default": {
+        "pushPartialResultsEvery": 50,
+        "saveDebugArtifacts": false
+      }
+    }
+  },
+  "required": [
+    "contactsSource"
+  ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "x_schema_source": "apify_actor_metadata",
+  "x_verified": true
+}

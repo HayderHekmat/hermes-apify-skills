@@ -1,0 +1,291 @@
+{
+  "name": "crm_data_enrichment_agent",
+  "version": "1.0.0",
+  "target": "hermes",
+  "source_url": "https://apify.com/solutionssmart/crm-data-enrichment-agent",
+  "description": "Enrich CRM contacts and B2B leads with company data, validated emails, phone numbers, social links, and website signals. Supports JSON, CSV, and Apify datasets with deduplication, lead scoring, and optional Clearbit/Hunter enrichment for sales prospecting and automation workflows.",
+  "capabilities": [
+    "Clean and enrich CRM contact lists with public web signals and third‑party enrichment.",
+    "Extract company and website metadata (titles, descriptions, contact pages, addresses).",
+    "Reduce manual research by automating website crawling for contact and company signals."
+  ],
+  "inputs": [
+    {
+      "name": "contactsSource",
+      "type": "string",
+      "description": "Where to load contacts from: JSON input, CSV text, or an Apify dataset ID.",
+      "required": true,
+      "default": "json"
+    },
+    {
+      "name": "contactsJson",
+      "type": "array",
+      "description": "Array of contact objects when source is 'json'. Each object should have at least an email; optional fields: firstName, lastName, company, phone.",
+      "required": false,
+      "default": []
+    },
+    {
+      "name": "contactsCsv",
+      "type": "string",
+      "description": "CSV string with headers when source is 'csv'. First row must be header names; use the field mapping options to match column names.",
+      "required": false,
+      "default": ""
+    },
+    {
+      "name": "datasetId",
+      "type": "string",
+      "description": "Apify dataset ID when source is 'dataset'. The Actor will read items from this dataset up to the maximum contacts limit.",
+      "required": false,
+      "default": ""
+    },
+    {
+      "name": "emailField",
+      "type": "string",
+      "description": "Property or column name for the contact's email in your data.",
+      "required": false,
+      "default": "email"
+    },
+    {
+      "name": "firstNameField",
+      "type": "string",
+      "description": "Property or column name for first name (optional).",
+      "required": false,
+      "default": "firstName"
+    },
+    {
+      "name": "lastNameField",
+      "type": "string",
+      "description": "Property or column name for last name (optional).",
+      "required": false,
+      "default": "lastName"
+    },
+    {
+      "name": "companyField",
+      "type": "string",
+      "description": "Property or column name for company (optional).",
+      "required": false,
+      "default": "company"
+    },
+    {
+      "name": "maxContacts",
+      "type": "integer",
+      "description": "Maximum number of contacts to process. Earlier contacts are processed first.",
+      "required": false,
+      "default": 500
+    },
+    {
+      "name": "dedupeKeys",
+      "type": "array",
+      "description": "Keys used to identify duplicates. Allowed: email, domain, companyNameNormalized, firstName, lastName. Add one key per line or use the JSON editor.",
+      "required": false,
+      "default": [
+        "email",
+        "domain"
+      ]
+    },
+    {
+      "name": "enrichment",
+      "type": "object",
+      "description": "Configure enrichment providers: website fallback (no API key), Clearbit, and Hunter.",
+      "required": false,
+      "default": {
+        "enableWebsiteFallback": true,
+        "enableClearbit": false,
+        "clearbitApiKey": "",
+        "enableHunter": false,
+        "hunterApiKey": ""
+      }
+    },
+    {
+      "name": "crawling",
+      "type": "object",
+      "description": "HTTP request settings: rate limit (global across website, Clearbit, and Hunter), timeout, retries, and concurrency.",
+      "required": false,
+      "default": {
+        "maxRequestsPerMinute": 60,
+        "requestTimeoutSecs": 12,
+        "maxRetries": 2,
+        "maxConcurrency": 10,
+        "useProxy": false,
+        "usePlaywrightFallback": false
+      }
+    },
+    {
+      "name": "scoring",
+      "type": "object",
+      "description": "Configure contact quality scoring. Weights should sum to about 1.0.",
+      "required": false,
+      "default": {
+        "enabled": true,
+        "emailValid": 0.25,
+        "hasWebsite": 0.2,
+        "hasPhone": 0.15,
+        "hasSocial": 0.15,
+        "companySignals": 0.25
+      }
+    },
+    {
+      "name": "integrations",
+      "type": "object",
+      "description": "Send run summary/results to n8n, OpenClaw, or a generic webhook endpoint after processing completes.",
+      "required": false,
+      "default": {
+        "enableWebhook": false,
+        "webhookUrl": "",
+        "webhookSecret": "",
+        "payloadMode": "summary",
+        "webhookTimeoutMs": 10000,
+        "webhookMaxRetries": 2,
+        "webhookRetryDelayMs": 1000,
+        "enableN8n": false,
+        "n8nWebhookUrl": "",
+        "n8nApiKey": "",
+        "enableOpenClaw": false,
+        "openClawWebhookUrl": "",
+        "openClawApiKey": "",
+        "highScoreWebhookUrl": "",
+        "failedWebhookUrl": "",
+        "highScoreThreshold": 75
+      }
+    },
+    {
+      "name": "intelligence",
+      "type": "object",
+      "description": "Advanced controls for adaptive enrichment, caching, AI fallback, learning memory, routing intelligence, and cost guardrails.",
+      "required": false,
+      "default": {
+        "adaptiveEnrichment": true,
+        "minConfidenceForApiEnrichment": 70,
+        "enableDomainCache": true,
+        "cacheTtlHours": 24,
+        "aiFallbackMode": "heuristic",
+        "aiFallbackWebhookUrl": "",
+        "progressivePipeline": true,
+        "maxApiEnrichmentPercent": 30,
+        "enableConfidenceExplainability": true,
+        "enableDomainLearning": true,
+        "learningBlockThreshold": 5,
+        "learningAllowThreshold": 3,
+        "smartRetry": true,
+        "budgetGuardrails": false,
+        "maxExternalApiCalls": 1000
+      }
+    },
+    {
+      "name": "output",
+      "type": "object",
+      "description": "Configure how results are written to the dataset and key-value store.",
+      "required": false,
+      "default": {
+        "pushPartialResultsEvery": 50,
+        "saveDebugArtifacts": false
+      }
+    }
+  ],
+  "outputs": [
+    {
+      "name": "place_name",
+      "type": "string",
+      "description": "Business or place name when available.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "address",
+      "type": "string",
+      "description": "Detected street address or location text when available.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "website",
+      "type": "string",
+      "description": "Business website URL when available.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "rating",
+      "type": "number",
+      "description": "Google Maps rating when available.",
+      "required": false,
+      "default": null
+    }
+  ],
+  "generated_by": "Hermes Skill Builder for Apify & APIs",
+  "readiness": {
+    "level": "executable",
+    "canRunDirectly": true,
+    "reason": "Actor slug, executable Apify endpoints, and verified input schema were extracted from Apify metadata. Conditional requirements were not inferred and a cost safety profile is available.",
+    "missing": []
+  },
+  "tool_call_contract": "tool_call_contract.json",
+  "schema_verified": true,
+  "source_metadata_type": "apify_api",
+  "conditionalRequirements": [],
+  "conditionalOnlyFields": [],
+  "defaultMode": null,
+  "fieldClassification": {
+    "basicUserFields": [
+      "emailField"
+    ],
+    "userFacingFields": [
+      "emailField"
+    ],
+    "advancedFields": [],
+    "internalFields": [
+      "datasetId"
+    ],
+    "highCostFields": [
+      "maxContacts",
+      "enrichment"
+    ],
+    "conditionalOnlyFields": [],
+    "agentDefaultFields": [
+      "emailField"
+    ],
+    "askOnlyIfNeededFields": [
+      "datasetId",
+      "maxContacts",
+      "enrichment"
+    ]
+  },
+  "agentInteractionPolicy": {
+    "defaultMode": null,
+    "conditionalOnlyFields": [],
+    "defaultAskFields": [
+      "emailField"
+    ],
+    "doNotAskFields": [
+      "datasetId"
+    ],
+    "askOnlyIfNeededFields": [
+      "datasetId",
+      "maxContacts",
+      "enrichment"
+    ],
+    "warnBeforeUsingFields": [
+      "maxContacts",
+      "enrichment"
+    ]
+  },
+  "costSafetyProfile": {
+    "riskLevel": "high",
+    "defaultMode": null,
+    "recommendedTestInput": {
+      "contactsSource": "json",
+      "emailField": "email"
+    },
+    "safeDefaults": {},
+    "highCostFields": [
+      "maxContacts",
+      "enrichment"
+    ],
+    "agentGuidance": [
+      "Start with a small maxPlaces, maxItems, or maxResults value for test runs.",
+      "Disable review scraping unless explicitly requested.",
+      "Disable website enrichment for first validation runs.",
+      "Use async runs for large jobs."
+    ]
+  }
+}

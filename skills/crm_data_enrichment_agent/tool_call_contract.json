@@ -1,0 +1,102 @@
+{
+  "platform": "apify",
+  "actorSlug": "solutionssmart/crm-data-enrichment-agent",
+  "apiActorId": "solutionssmart~crm-data-enrichment-agent",
+  "runEndpoint": "https://api.apify.com/v2/acts/solutionssmart~crm-data-enrichment-agent/runs",
+  "runSyncEndpoint": "https://api.apify.com/v2/acts/solutionssmart~crm-data-enrichment-agent/run-sync-get-dataset-items",
+  "requiresSecret": "APIFY_TOKEN",
+  "inputSchemaSource": "apify_actor_metadata",
+  "resultHandling": {
+    "defaultDataset": true,
+    "itemsEndpointPattern": "https://api.apify.com/v2/datasets/{defaultDatasetId}/items?format=json&clean=true"
+  },
+  "exampleInvocation": {
+    "method": "POST",
+    "url": "https://api.apify.com/v2/acts/solutionssmart~crm-data-enrichment-agent/runs",
+    "headers": {
+      "Authorization": "Bearer ${APIFY_TOKEN}",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "contactsSource": "json",
+      "emailField": "email"
+    }
+  },
+  "conditionalRequirements": [],
+  "conditionalOnlyFields": [],
+  "defaultMode": null,
+  "fieldClassification": {
+    "basicUserFields": [
+      "emailField"
+    ],
+    "userFacingFields": [
+      "emailField"
+    ],
+    "advancedFields": [],
+    "internalFields": [
+      "datasetId"
+    ],
+    "highCostFields": [
+      "maxContacts",
+      "enrichment"
+    ],
+    "conditionalOnlyFields": [],
+    "agentDefaultFields": [
+      "emailField"
+    ],
+    "askOnlyIfNeededFields": [
+      "datasetId",
+      "maxContacts",
+      "enrichment"
+    ]
+  },
+  "agentInteractionPolicy": {
+    "defaultMode": null,
+    "conditionalOnlyFields": [],
+    "defaultAskFields": [
+      "emailField"
+    ],
+    "doNotAskFields": [
+      "datasetId"
+    ],
+    "askOnlyIfNeededFields": [
+      "datasetId",
+      "maxContacts",
+      "enrichment"
+    ],
+    "warnBeforeUsingFields": [
+      "maxContacts",
+      "enrichment"
+    ]
+  },
+  "costSafetyProfile": {
+    "riskLevel": "high",
+    "defaultMode": null,
+    "recommendedTestInput": {
+      "contactsSource": "json",
+      "emailField": "email"
+    },
+    "safeDefaults": {},
+    "highCostFields": [
+      "maxContacts",
+      "enrichment"
+    ],
+    "agentGuidance": [
+      "Start with a small maxPlaces, maxItems, or maxResults value for test runs.",
+      "Disable review scraping unless explicitly requested.",
+      "Disable website enrichment for first validation runs.",
+      "Use async runs for large jobs."
+    ]
+  },
+  "validationGuidance": {
+    "beforeRun": [
+      "Validate input_schema.json.",
+      "Determine selected mode/action first.",
+      "Apply conditionalRequirements for the selected mode/action.",
+      "Ask for conditionalOnlyFields only when the selected condition requires them.",
+      "Do not ask for placeId during normal search/list workflows.",
+      "Apply safeDefaults for first test runs.",
+      "Do not enable high-cost fields unless user explicitly asks."
+    ]
+  }
+}
