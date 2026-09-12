@@ -1,0 +1,151 @@
+{
+  "$schema": "https://apify.com/schemas/v1/input.json",
+  "title": "Actor Web App configuration",
+  "description": "Choose the Actor and presentation settings for the generated app.",
+  "type": "object",
+  "schemaVersion": 1,
+  "additionalProperties": false,
+  "properties": {
+    "actorId": {
+      "title": "Target Actor ID",
+      "type": "string",
+      "description": "Actor in username/actor-name format.",
+      "editor": "textfield",
+      "default": "solutionssmart/brand-dna",
+      "pattern": "^[a-zA-Z0-9][\\w-]{1,63}[\\/~][a-zA-Z0-9][\\w-]{1,79}$"
+    },
+    "title": {
+      "title": "App title",
+      "type": "string",
+      "description": "Optional title shown to end users.",
+      "editor": "textfield"
+    },
+    "description": {
+      "title": "App description",
+      "type": "string",
+      "description": "Optional short explanation of the app.",
+      "editor": "textarea"
+    },
+    "branding": {
+      "title": "Branding",
+      "type": "object",
+      "description": "Control the app identity, accent color, theme, and Apify field visibility.",
+      "editor": "schemaBased",
+      "default": {
+        "logoUrl": "",
+        "accentColor": "#19724c",
+        "theme": "light",
+        "hideApifyTechnicalFields": true
+      },
+      "properties": {
+        "logoUrl": {
+          "title": "Logo URL",
+          "type": "string",
+          "description": "Optional HTTPS image URL shown in the app header.",
+          "editor": "textfield",
+          "pattern": "^(?:|https:\\/\\/[^\\s]+)$",
+          "default": ""
+        },
+        "accentColor": {
+          "title": "Accent color",
+          "type": "string",
+          "description": "Six-digit hexadecimal color used for actions and highlights.",
+          "editor": "textfield",
+          "pattern": "^#[0-9a-fA-F]{6}$",
+          "default": "#19724c"
+        },
+        "theme": {
+          "title": "Theme",
+          "type": "string",
+          "description": "Choose the visual style of the generated app.",
+          "editor": "select",
+          "enum": [
+            "light",
+            "dark",
+            "warm"
+          ],
+          "enumTitles": [
+            "Light",
+            "Dark",
+            "Warm"
+          ],
+          "default": "light"
+        },
+        "hideApifyTechnicalFields": {
+          "title": "Hide Apify technical fields",
+          "type": "boolean",
+          "description": "Hide common platform and runtime fields from the generated form.",
+          "editor": "checkbox",
+          "default": true
+        }
+      }
+    },
+    "input": {
+      "title": "Input display",
+      "type": "object",
+      "description": "Choose how much of the target Actor input schema is shown to end users.",
+      "editor": "schemaBased",
+      "default": {
+        "showAdvancedFields": true
+      },
+      "properties": {
+        "showAdvancedFields": {
+          "title": "Show advanced fields",
+          "type": "boolean",
+          "description": "Show optional fields that are commonly used for advanced runs.",
+          "editor": "checkbox",
+          "default": true
+        }
+      }
+    },
+    "output": {
+      "title": "Output display",
+      "type": "object",
+      "description": "Choose which result views and exports are available after a run.",
+      "editor": "schemaBased",
+      "default": {
+        "showTable": true,
+        "allowCsv": true,
+        "allowJson": true,
+        "maxPreviewRows": 100
+      },
+      "properties": {
+        "showTable": {
+          "title": "Show results table",
+          "type": "boolean",
+          "description": "Display a preview of the target Actor's default Dataset.",
+          "editor": "checkbox",
+          "default": true
+        },
+        "allowCsv": {
+          "title": "Allow CSV export",
+          "type": "boolean",
+          "description": "Add a CSV download action for the target Dataset.",
+          "editor": "checkbox",
+          "default": true
+        },
+        "allowJson": {
+          "title": "Allow JSON export",
+          "type": "boolean",
+          "description": "Add a JSON download action for the target Dataset.",
+          "editor": "checkbox",
+          "default": true
+        },
+        "maxPreviewRows": {
+          "title": "Maximum preview rows",
+          "type": "integer",
+          "description": "Number of Dataset rows shown in the table, from 1 to 500.",
+          "editor": "number",
+          "minimum": 1,
+          "maximum": 500,
+          "default": 100
+        }
+      }
+    }
+  },
+  "required": [
+    "actorId"
+  ],
+  "x_schema_source": "apify_actor_metadata",
+  "x_verified": true
+}

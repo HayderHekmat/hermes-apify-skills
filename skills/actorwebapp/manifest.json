@@ -1,0 +1,114 @@
+{
+  "name": "actorwebapp",
+  "version": "1.0.0",
+  "target": "hermes",
+  "source_url": "https://apify.com/solutionssmart/actorwebapp",
+  "description": "Turn a compatible Apify Actor into a branded web app with a simple input form, run status, Dataset results, exports, and shareable Standby URL. Give customers and teammates an easier way to use your Actor without exposing your API token.",
+  "capabilities": [
+    "Turn a crawler into a branded website data-collection tool.",
+    "Give customers a simple interface for a lead-generation or research Actor."
+  ],
+  "inputs": [
+    {
+      "name": "actorId",
+      "type": "string",
+      "description": "Actor in username/actor-name format.",
+      "required": true,
+      "default": "solutionssmart/brand-dna"
+    },
+    {
+      "name": "title",
+      "type": "string",
+      "description": "Optional title shown to end users.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "description",
+      "type": "string",
+      "description": "Optional short explanation of the app.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "branding",
+      "type": "object",
+      "description": "Control the app identity, accent color, theme, and Apify field visibility.",
+      "required": false,
+      "default": {
+        "logoUrl": "",
+        "accentColor": "#19724c",
+        "theme": "light",
+        "hideApifyTechnicalFields": true
+      }
+    },
+    {
+      "name": "input",
+      "type": "object",
+      "description": "Choose how much of the target Actor input schema is shown to end users.",
+      "required": false,
+      "default": {
+        "showAdvancedFields": true
+      }
+    },
+    {
+      "name": "output",
+      "type": "object",
+      "description": "Choose which result views and exports are available after a run.",
+      "required": false,
+      "default": {
+        "showTable": true,
+        "allowCsv": true,
+        "allowJson": true,
+        "maxPreviewRows": 100
+      }
+    }
+  ],
+  "outputs": [],
+  "generated_by": "Hermes Skill Builder for Apify & APIs",
+  "readiness": {
+    "level": "executable",
+    "canRunDirectly": true,
+    "reason": "Actor slug, executable Apify endpoints, and verified input schema were extracted from Apify metadata. Conditional requirements were not inferred and a cost safety profile is available.",
+    "missing": []
+  },
+  "tool_call_contract": "tool_call_contract.json",
+  "schema_verified": true,
+  "source_metadata_type": "apify_api",
+  "conditionalRequirements": [],
+  "conditionalOnlyFields": [],
+  "defaultMode": null,
+  "fieldClassification": {
+    "basicUserFields": [],
+    "userFacingFields": [],
+    "advancedFields": [],
+    "internalFields": [],
+    "highCostFields": [],
+    "conditionalOnlyFields": [],
+    "agentDefaultFields": [],
+    "askOnlyIfNeededFields": []
+  },
+  "agentInteractionPolicy": {
+    "defaultMode": null,
+    "conditionalOnlyFields": [],
+    "defaultAskFields": [],
+    "doNotAskFields": [],
+    "askOnlyIfNeededFields": [],
+    "warnBeforeUsingFields": []
+  },
+  "costSafetyProfile": {
+    "riskLevel": "low",
+    "defaultMode": null,
+    "recommendedTestInput": {
+      "actorId": "solutionssmart/brand-dna"
+    },
+    "safeDefaults": {},
+    "highCostFields": [],
+    "agentGuidance": [
+      "Start with a small maxPlaces, maxItems, or maxResults value for test runs.",
+      "Disable review scraping unless explicitly requested.",
+      "Disable website enrichment for first validation runs.",
+      "Use async runs for large jobs."
+    ]
+  }
+}
