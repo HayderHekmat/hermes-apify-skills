@@ -1,0 +1,442 @@
+{
+  "name": "fast_google_maps_scraper",
+  "version": "1.0.0",
+  "target": "hermes",
+  "source_url": "https://apify.com/solutionssmart/fast-google-map-scraper",
+  "description": "HTTP-first Google Maps scraper for search listings, place details, reviews, lead scoring, and optional website enrichment.",
+  "capabilities": [
+    "Fast Google Maps Scraper",
+    "Low-cost prospecting and lead generation from Google Maps business listings.",
+    "Building lists of businesses with names, ratings, categories, addresses, coordinates, and place identifiers.",
+    "Fetching full place details for lead qualification and outreach prioritization.",
+    "Collecting and analyzing customer reviews for sentiment, volume, and per-place review datasets.",
+    "Enriching business websites to extract emails, social links, page titles, and contact pages for outreach.",
+    "Targeted local searches using city/country, structured geolocation fields, custom lat/long anchors, radius or GeoJSON points."
+  ],
+  "inputs": [
+    {
+      "name": "mode",
+      "type": "string",
+      "description": "list searches only and is cheapest; place scrapes one known place ID; search lists places, fetches details, and optionally reviews.",
+      "required": true,
+      "default": "search"
+    },
+    {
+      "name": "outputMode",
+      "type": "string",
+      "description": "Choose which records are saved to the Dataset. list mode always returns listing records.",
+      "required": false,
+      "default": "placesOnly"
+    },
+    {
+      "name": "query",
+      "type": "string",
+      "description": "Business/category query, for example 'dentists' or 'coffee shops'. Required for list and search mode.",
+      "required": false,
+      "default": "coffee shops"
+    },
+    {
+      "name": "searchLocation",
+      "type": "string",
+      "description": "Free-form location such as Berlin, Germany. Used together with the search query.",
+      "required": false,
+      "default": "Berlin, Germany"
+    },
+    {
+      "name": "geolocationParameters",
+      "type": "object",
+      "description": "Optional structured location fields. These are used when the free-form location is empty.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "customGeolocation",
+      "type": "object",
+      "description": "Optional geometry and coordinate fields for anchoring the Google Maps search area.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "placeId",
+      "type": "string",
+      "description": "Known Google Maps place ID. Required for place mode.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "maxPlaces",
+      "type": "integer",
+      "description": "Maximum number of search results to list or fully scrape.",
+      "required": false,
+      "default": 5
+    },
+    {
+      "name": "maxReviews",
+      "type": "integer",
+      "description": "Maximum reviews to fetch for each place. Set to 0 to skip reviews.",
+      "required": false,
+      "default": 0
+    },
+    {
+      "name": "maxTotalReviews",
+      "type": "integer",
+      "description": "Global review cap across the whole run. Set to 0 for no global cap.",
+      "required": false,
+      "default": 0
+    },
+    {
+      "name": "maxConcurrency",
+      "type": "integer",
+      "description": "Number of places to scrape in parallel in search mode. Higher values are faster but can increase blocking risk.",
+      "required": false,
+      "default": 3
+    },
+    {
+      "name": "zoom",
+      "type": "integer",
+      "description": "Google Maps zoom level. Higher values narrow the search area.",
+      "required": false,
+      "default": 13
+    },
+    {
+      "name": "language",
+      "type": "string",
+      "description": "Google hl language parameter.",
+      "required": false,
+      "default": "en"
+    },
+    {
+      "name": "gl",
+      "type": "string",
+      "description": "Google gl country parameter.",
+      "required": false,
+      "default": "de"
+    },
+    {
+      "name": "delaySeconds",
+      "type": "number",
+      "description": "Minimum delay between HTTP requests. Actual delay is randomized up to 2x this value.",
+      "required": false,
+      "default": 0.5
+    },
+    {
+      "name": "timeoutSeconds",
+      "type": "integer",
+      "description": "HTTP request timeout in seconds.",
+      "required": false,
+      "default": 30
+    },
+    {
+      "name": "proxyConfiguration",
+      "type": "object",
+      "description": "Use Apify Proxy or custom proxies.",
+      "required": false,
+      "default": {
+        "useApifyProxy": true
+      }
+    },
+    {
+      "name": "proxyUrl",
+      "type": "string",
+      "description": "Optional direct proxy URL used when Apify Proxy is disabled.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "enrichWebsites",
+      "type": "boolean",
+      "description": "Fetch listed websites to extract title, description, emails, and social links.",
+      "required": false,
+      "default": false
+    },
+    {
+      "name": "websiteEnrichmentDepth",
+      "type": "string",
+      "description": "Homepage only is fastest. Contact pages also checks contact/about/impressum pages for emails and social links.",
+      "required": false,
+      "default": "homepageOnly"
+    },
+    {
+      "name": "websiteTimeoutSeconds",
+      "type": "integer",
+      "description": "Timeout for each website enrichment request. Keep this lower than the Google Maps timeout to avoid slow websites increasing run cost.",
+      "required": false,
+      "default": 8
+    },
+    {
+      "name": "skipSocialWebsites",
+      "type": "boolean",
+      "description": "Skip website enrichment when Google Maps lists a social profile such as Instagram, Facebook, LinkedIn, X, or Twitter. This is faster and avoids many 429 responses.",
+      "required": false,
+      "default": true
+    },
+    {
+      "name": "leadFilters",
+      "type": "object",
+      "description": "Optional filters applied after full place details are fetched. Filtered places are skipped from Dataset output and reviews.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "enableSqliteCheckpoint",
+      "type": "boolean",
+      "description": "Keep an internal SQLite copy for deduplication/checkpointing. Dataset remains the primary output.",
+      "required": false,
+      "default": false
+    },
+    {
+      "name": "sqlitePath",
+      "type": "string",
+      "description": "Internal SQLite path when checkpointing is enabled.",
+      "required": false,
+      "default": "storage/key_value_stores/default/gmaps.db"
+    },
+    {
+      "name": "enableBillingEvents",
+      "type": "boolean",
+      "description": "Legacy testing flag. Production monetization is enabled automatically when pay-per-event pricing is configured in Apify Console. For local tests, use ACTOR_TEST_PAY_PER_EVENT=true.",
+      "required": false,
+      "default": false
+    }
+  ],
+  "outputs": [
+    {
+      "name": "place_name",
+      "type": "string",
+      "description": "Business or place name when available.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "address",
+      "type": "string",
+      "description": "Detected street address or location text when available.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "website",
+      "type": "string",
+      "description": "Business website URL when available.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "rating",
+      "type": "number",
+      "description": "Google Maps rating when available.",
+      "required": false,
+      "default": null
+    }
+  ],
+  "generated_by": "Hermes Skill Builder for Apify & APIs",
+  "readiness": {
+    "level": "executable",
+    "canRunDirectly": true,
+    "reason": "Actor slug, executable Apify endpoints, and verified input schema were extracted from Apify metadata. Conditional requirements were inferred and a cost safety profile is available.",
+    "missing": []
+  },
+  "tool_call_contract": "tool_call_contract.json",
+  "schema_verified": true,
+  "source_metadata_type": "apify_api",
+  "conditionalRequirements": [
+    {
+      "when": {
+        "mode": "search"
+      },
+      "required": [
+        "query",
+        "searchLocation"
+      ],
+      "reason": "Search and list modes require a business/category query and a target location."
+    },
+    {
+      "when": {
+        "mode": "list"
+      },
+      "required": [
+        "query",
+        "searchLocation"
+      ],
+      "reason": "Search and list modes require a business/category query and a target location."
+    },
+    {
+      "when": {
+        "mode": "place"
+      },
+      "required": [
+        "placeId"
+      ],
+      "reason": "Place/detail mode requires a known place ID."
+    }
+  ],
+  "conditionalOnlyFields": [
+    "placeId"
+  ],
+  "defaultMode": "search",
+  "fieldClassification": {
+    "basicUserFields": [
+      "mode",
+      "query",
+      "searchLocation",
+      "placeId",
+      "maxPlaces",
+      "maxReviews",
+      "enrichWebsites",
+      "leadFilters"
+    ],
+    "userFacingFields": [
+      "mode",
+      "query",
+      "searchLocation",
+      "placeId",
+      "maxPlaces",
+      "maxReviews",
+      "enrichWebsites",
+      "leadFilters"
+    ],
+    "advancedFields": [
+      "outputMode",
+      "geolocationParameters",
+      "customGeolocation",
+      "maxConcurrency",
+      "zoom",
+      "language",
+      "gl",
+      "delaySeconds",
+      "timeoutSeconds",
+      "proxyConfiguration",
+      "proxyUrl",
+      "websiteEnrichmentDepth",
+      "websiteTimeoutSeconds"
+    ],
+    "internalFields": [
+      "enableSqliteCheckpoint",
+      "sqlitePath",
+      "enableBillingEvents"
+    ],
+    "highCostFields": [
+      "maxPlaces",
+      "maxReviews",
+      "maxTotalReviews",
+      "maxConcurrency",
+      "proxyConfiguration",
+      "proxyUrl",
+      "enrichWebsites",
+      "websiteEnrichmentDepth"
+    ],
+    "conditionalOnlyFields": [
+      "placeId"
+    ],
+    "agentDefaultFields": [
+      "mode",
+      "query",
+      "searchLocation",
+      "maxPlaces",
+      "maxReviews",
+      "enrichWebsites"
+    ],
+    "askOnlyIfNeededFields": [
+      "outputMode",
+      "geolocationParameters",
+      "customGeolocation",
+      "maxConcurrency",
+      "zoom",
+      "language",
+      "gl",
+      "delaySeconds",
+      "timeoutSeconds",
+      "proxyConfiguration",
+      "proxyUrl",
+      "websiteEnrichmentDepth",
+      "websiteTimeoutSeconds",
+      "enableSqliteCheckpoint",
+      "sqlitePath",
+      "enableBillingEvents",
+      "placeId",
+      "maxTotalReviews"
+    ]
+  },
+  "agentInteractionPolicy": {
+    "defaultMode": "search",
+    "conditionalOnlyFields": [
+      "placeId"
+    ],
+    "defaultAskFields": [
+      "mode",
+      "query",
+      "searchLocation",
+      "maxPlaces",
+      "maxReviews",
+      "enrichWebsites"
+    ],
+    "doNotAskFields": [
+      "enableSqliteCheckpoint",
+      "sqlitePath",
+      "enableBillingEvents"
+    ],
+    "askOnlyIfNeededFields": [
+      "outputMode",
+      "geolocationParameters",
+      "customGeolocation",
+      "maxConcurrency",
+      "zoom",
+      "language",
+      "gl",
+      "delaySeconds",
+      "timeoutSeconds",
+      "proxyConfiguration",
+      "proxyUrl",
+      "websiteEnrichmentDepth",
+      "websiteTimeoutSeconds",
+      "enableSqliteCheckpoint",
+      "sqlitePath",
+      "enableBillingEvents",
+      "placeId",
+      "maxTotalReviews"
+    ],
+    "warnBeforeUsingFields": [
+      "maxPlaces",
+      "maxReviews",
+      "maxTotalReviews",
+      "maxConcurrency",
+      "proxyConfiguration",
+      "proxyUrl",
+      "enrichWebsites",
+      "websiteEnrichmentDepth"
+    ]
+  },
+  "costSafetyProfile": {
+    "riskLevel": "high",
+    "defaultMode": "search",
+    "recommendedTestInput": {
+      "mode": "search",
+      "query": "coffee shops",
+      "searchLocation": "Berlin, Germany",
+      "maxPlaces": 5,
+      "maxReviews": 0,
+      "enrichWebsites": false
+    },
+    "safeDefaults": {
+      "maxPlaces": 5,
+      "maxReviews": 0,
+      "enrichWebsites": false
+    },
+    "highCostFields": [
+      "maxPlaces",
+      "maxReviews",
+      "maxTotalReviews",
+      "maxConcurrency",
+      "proxyConfiguration",
+      "proxyUrl",
+      "enrichWebsites",
+      "websiteEnrichmentDepth"
+    ],
+    "agentGuidance": [
+      "Start with a small maxPlaces, maxItems, or maxResults value for test runs.",
+      "Disable review scraping unless explicitly requested.",
+      "Disable website enrichment for first validation runs.",
+      "Use async runs for large jobs."
+    ]
+  }
+}

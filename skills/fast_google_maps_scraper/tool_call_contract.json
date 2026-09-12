@@ -1,0 +1,240 @@
+{
+  "platform": "apify",
+  "actorSlug": "solutionssmart/fast-google-map-scraper",
+  "apiActorId": "solutionssmart~fast-google-map-scraper",
+  "runEndpoint": "https://api.apify.com/v2/acts/solutionssmart~fast-google-map-scraper/runs",
+  "runSyncEndpoint": "https://api.apify.com/v2/acts/solutionssmart~fast-google-map-scraper/run-sync-get-dataset-items",
+  "requiresSecret": "APIFY_TOKEN",
+  "inputSchemaSource": "apify_actor_metadata",
+  "resultHandling": {
+    "defaultDataset": true,
+    "itemsEndpointPattern": "https://api.apify.com/v2/datasets/{defaultDatasetId}/items?format=json&clean=true"
+  },
+  "exampleInvocation": {
+    "method": "POST",
+    "url": "https://api.apify.com/v2/acts/solutionssmart~fast-google-map-scraper/runs",
+    "headers": {
+      "Authorization": "Bearer ${APIFY_TOKEN}",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "mode": "search",
+      "query": "coffee shops",
+      "searchLocation": "Berlin, Germany",
+      "maxPlaces": 5,
+      "maxReviews": 0,
+      "enrichWebsites": false
+    }
+  },
+  "conditionalRequirements": [
+    {
+      "when": {
+        "mode": "search"
+      },
+      "required": [
+        "query",
+        "searchLocation"
+      ],
+      "reason": "Search and list modes require a business/category query and a target location."
+    },
+    {
+      "when": {
+        "mode": "list"
+      },
+      "required": [
+        "query",
+        "searchLocation"
+      ],
+      "reason": "Search and list modes require a business/category query and a target location."
+    },
+    {
+      "when": {
+        "mode": "place"
+      },
+      "required": [
+        "placeId"
+      ],
+      "reason": "Place/detail mode requires a known place ID."
+    }
+  ],
+  "conditionalOnlyFields": [
+    "placeId"
+  ],
+  "defaultMode": "search",
+  "fieldClassification": {
+    "basicUserFields": [
+      "mode",
+      "query",
+      "searchLocation",
+      "placeId",
+      "maxPlaces",
+      "maxReviews",
+      "enrichWebsites",
+      "leadFilters"
+    ],
+    "userFacingFields": [
+      "mode",
+      "query",
+      "searchLocation",
+      "placeId",
+      "maxPlaces",
+      "maxReviews",
+      "enrichWebsites",
+      "leadFilters"
+    ],
+    "advancedFields": [
+      "outputMode",
+      "geolocationParameters",
+      "customGeolocation",
+      "maxConcurrency",
+      "zoom",
+      "language",
+      "gl",
+      "delaySeconds",
+      "timeoutSeconds",
+      "proxyConfiguration",
+      "proxyUrl",
+      "websiteEnrichmentDepth",
+      "websiteTimeoutSeconds"
+    ],
+    "internalFields": [
+      "enableSqliteCheckpoint",
+      "sqlitePath",
+      "enableBillingEvents"
+    ],
+    "highCostFields": [
+      "maxPlaces",
+      "maxReviews",
+      "maxTotalReviews",
+      "maxConcurrency",
+      "proxyConfiguration",
+      "proxyUrl",
+      "enrichWebsites",
+      "websiteEnrichmentDepth"
+    ],
+    "conditionalOnlyFields": [
+      "placeId"
+    ],
+    "agentDefaultFields": [
+      "mode",
+      "query",
+      "searchLocation",
+      "maxPlaces",
+      "maxReviews",
+      "enrichWebsites"
+    ],
+    "askOnlyIfNeededFields": [
+      "outputMode",
+      "geolocationParameters",
+      "customGeolocation",
+      "maxConcurrency",
+      "zoom",
+      "language",
+      "gl",
+      "delaySeconds",
+      "timeoutSeconds",
+      "proxyConfiguration",
+      "proxyUrl",
+      "websiteEnrichmentDepth",
+      "websiteTimeoutSeconds",
+      "enableSqliteCheckpoint",
+      "sqlitePath",
+      "enableBillingEvents",
+      "placeId",
+      "maxTotalReviews"
+    ]
+  },
+  "agentInteractionPolicy": {
+    "defaultMode": "search",
+    "conditionalOnlyFields": [
+      "placeId"
+    ],
+    "defaultAskFields": [
+      "mode",
+      "query",
+      "searchLocation",
+      "maxPlaces",
+      "maxReviews",
+      "enrichWebsites"
+    ],
+    "doNotAskFields": [
+      "enableSqliteCheckpoint",
+      "sqlitePath",
+      "enableBillingEvents"
+    ],
+    "askOnlyIfNeededFields": [
+      "outputMode",
+      "geolocationParameters",
+      "customGeolocation",
+      "maxConcurrency",
+      "zoom",
+      "language",
+      "gl",
+      "delaySeconds",
+      "timeoutSeconds",
+      "proxyConfiguration",
+      "proxyUrl",
+      "websiteEnrichmentDepth",
+      "websiteTimeoutSeconds",
+      "enableSqliteCheckpoint",
+      "sqlitePath",
+      "enableBillingEvents",
+      "placeId",
+      "maxTotalReviews"
+    ],
+    "warnBeforeUsingFields": [
+      "maxPlaces",
+      "maxReviews",
+      "maxTotalReviews",
+      "maxConcurrency",
+      "proxyConfiguration",
+      "proxyUrl",
+      "enrichWebsites",
+      "websiteEnrichmentDepth"
+    ]
+  },
+  "costSafetyProfile": {
+    "riskLevel": "high",
+    "defaultMode": "search",
+    "recommendedTestInput": {
+      "mode": "search",
+      "query": "coffee shops",
+      "searchLocation": "Berlin, Germany",
+      "maxPlaces": 5,
+      "maxReviews": 0,
+      "enrichWebsites": false
+    },
+    "safeDefaults": {
+      "maxPlaces": 5,
+      "maxReviews": 0,
+      "enrichWebsites": false
+    },
+    "highCostFields": [
+      "maxPlaces",
+      "maxReviews",
+      "maxTotalReviews",
+      "maxConcurrency",
+      "proxyConfiguration",
+      "proxyUrl",
+      "enrichWebsites",
+      "websiteEnrichmentDepth"
+    ],
+    "agentGuidance": [
+      "Start with a small maxPlaces, maxItems, or maxResults value for test runs.",
+      "Disable review scraping unless explicitly requested.",
+      "Disable website enrichment for first validation runs.",
+      "Use async runs for large jobs."
+    ]
+  },
+  "validationGuidance": {
+    "beforeRun": [
+      "Validate input_schema.json.",
+      "Determine selected mode/action first.",
+      "Apply conditionalRequirements for the selected mode/action.",
+      "Ask for conditionalOnlyFields only when the selected condition requires them.",
+      "Do not ask for placeId during normal search/list workflows.",
+      "Apply safeDefaults for first test runs.",
+      "Do not enable high-cost fields unless user explicitly asks."
+    ]
+  }
+}

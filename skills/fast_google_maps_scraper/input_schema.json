@@ -1,0 +1,343 @@
+{
+  "title": "Fast Google Maps Scraper Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "mode": {
+      "title": "Mode",
+      "type": "string",
+      "description": "list searches only and is cheapest; place scrapes one known place ID; search lists places, fetches details, and optionally reviews.",
+      "editor": "select",
+      "default": "search",
+      "enum": [
+        "list",
+        "place",
+        "search"
+      ],
+      "enumTitles": [
+        "List only",
+        "Place by ID",
+        "Search with details"
+      ]
+    },
+    "outputMode": {
+      "title": "Output mode",
+      "type": "string",
+      "description": "Choose which records are saved to the Dataset. list mode always returns listing records.",
+      "editor": "select",
+      "default": "placesOnly",
+      "enum": [
+        "allRecords",
+        "placesAndReviews",
+        "placesOnly"
+      ],
+      "enumTitles": [
+        "All records",
+        "Places and reviews",
+        "Places only"
+      ]
+    },
+    "query": {
+      "title": "Search query",
+      "type": "string",
+      "description": "Business/category query, for example 'dentists' or 'coffee shops'. Required for list and search mode.",
+      "editor": "textfield",
+      "default": "coffee shops",
+      "prefill": "coffee shops"
+    },
+    "searchLocation": {
+      "title": "📍 Where should we search?",
+      "type": "string",
+      "description": "Free-form location such as Berlin, Germany. Used together with the search query.",
+      "editor": "textfield",
+      "default": "Berlin, Germany",
+      "prefill": "Berlin, Germany"
+    },
+    "geolocationParameters": {
+      "title": "🧭 Geolocation parameters",
+      "type": "object",
+      "description": "Optional structured location fields. These are used when the free-form location is empty.",
+      "editor": "schemaBased",
+      "additionalProperties": false,
+      "properties": {
+        "country": {
+          "title": "🌎 Country",
+          "type": "string",
+          "description": "Country or region, for example Germany.",
+          "editor": "textfield"
+        },
+        "stateRegion": {
+          "title": "🧭 State or region",
+          "type": "string",
+          "description": "State, region, province, or administrative area.",
+          "editor": "textfield"
+        },
+        "county": {
+          "title": "📌 County",
+          "type": "string",
+          "description": "County, district, borough, or local administrative area.",
+          "editor": "textfield"
+        },
+        "city": {
+          "title": "🏙️ City",
+          "type": "string",
+          "description": "City or locality, for example Berlin.",
+          "editor": "textfield"
+        },
+        "postalCode": {
+          "title": "🏷️ Postal code",
+          "type": "string",
+          "description": "Postal code or ZIP code.",
+          "editor": "textfield"
+        }
+      }
+    },
+    "customGeolocation": {
+      "title": "📐 Custom geolocation",
+      "type": "object",
+      "description": "Optional geometry and coordinate fields for anchoring the Google Maps search area.",
+      "editor": "schemaBased",
+      "additionalProperties": false,
+      "properties": {
+        "geometryType": {
+          "title": "🔷 Geometry type",
+          "type": "string",
+          "description": "Optional geometry hint for custom coordinates.",
+          "editor": "select",
+          "enum": [
+            "point",
+            "circle",
+            "polygon",
+            "bbox"
+          ],
+          "enumTitles": [
+            "Point",
+            "Circle",
+            "Polygon",
+            "Bounding box"
+          ]
+        },
+        "coordinates": {
+          "title": "📍 Coordinates",
+          "type": "string",
+          "description": "Optional coordinates as text, for example '52.520008, 13.404954'.",
+          "editor": "textarea"
+        },
+        "radiusKm": {
+          "title": "📏 Radius in km",
+          "type": "number",
+          "description": "Optional search radius. When provided, it is converted to an approximate map zoom.",
+          "minimum": 0
+        },
+        "latitude": {
+          "title": "↕️ Latitude",
+          "type": "number",
+          "description": "Optional map center latitude."
+        },
+        "longitude": {
+          "title": "↔️ Longitude",
+          "type": "number",
+          "description": "Optional map center longitude."
+        },
+        "coordinatesJson": {
+          "title": "🧾 Coordinates JSON",
+          "type": "string",
+          "description": "Optional GeoJSON Point, Feature, or coordinate array. Example: {\"type\":\"Point\",\"coordinates\":[13.404954,52.520008]}",
+          "editor": "textarea"
+        }
+      }
+    },
+    "placeId": {
+      "title": "Place ID",
+      "type": "string",
+      "description": "Known Google Maps place ID. Required for place mode.",
+      "editor": "textfield"
+    },
+    "maxPlaces": {
+      "title": "Max places",
+      "type": "integer",
+      "description": "Maximum number of search results to list or fully scrape.",
+      "default": 5,
+      "minimum": 1,
+      "maximum": 500
+    },
+    "maxReviews": {
+      "title": "Max reviews per place",
+      "type": "integer",
+      "description": "Maximum reviews to fetch for each place. Set to 0 to skip reviews.",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 1000
+    },
+    "maxTotalReviews": {
+      "title": "Max total reviews",
+      "type": "integer",
+      "description": "Global review cap across the whole run. Set to 0 for no global cap.",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 100000
+    },
+    "maxConcurrency": {
+      "title": "Max concurrency",
+      "type": "integer",
+      "description": "Number of places to scrape in parallel in search mode. Higher values are faster but can increase blocking risk.",
+      "default": 3,
+      "minimum": 1,
+      "maximum": 20
+    },
+    "zoom": {
+      "title": "Map zoom",
+      "type": "integer",
+      "description": "Google Maps zoom level. Higher values narrow the search area.",
+      "default": 13,
+      "minimum": 1,
+      "maximum": 21
+    },
+    "language": {
+      "title": "Language",
+      "type": "string",
+      "description": "Google hl language parameter.",
+      "default": "en",
+      "editor": "textfield"
+    },
+    "gl": {
+      "title": "Google country",
+      "type": "string",
+      "description": "Google gl country parameter.",
+      "default": "de",
+      "editor": "textfield"
+    },
+    "delaySeconds": {
+      "title": "Delay between requests",
+      "type": "number",
+      "description": "Minimum delay between HTTP requests. Actual delay is randomized up to 2x this value.",
+      "default": 0.5,
+      "minimum": 0,
+      "maximum": 60
+    },
+    "timeoutSeconds": {
+      "title": "Request timeout",
+      "type": "integer",
+      "description": "HTTP request timeout in seconds.",
+      "default": 30,
+      "minimum": 5,
+      "maximum": 120
+    },
+    "proxyConfiguration": {
+      "title": "Apify Proxy",
+      "type": "object",
+      "description": "Use Apify Proxy or custom proxies.",
+      "editor": "proxy",
+      "default": {
+        "useApifyProxy": true
+      }
+    },
+    "proxyUrl": {
+      "title": "Manual proxy URL",
+      "type": "string",
+      "description": "Optional direct proxy URL used when Apify Proxy is disabled.",
+      "editor": "textfield"
+    },
+    "enrichWebsites": {
+      "title": "Enrich websites",
+      "type": "boolean",
+      "description": "Fetch listed websites to extract title, description, emails, and social links.",
+      "default": false
+    },
+    "websiteEnrichmentDepth": {
+      "title": "Website enrichment depth",
+      "type": "string",
+      "description": "Homepage only is fastest. Contact pages also checks contact/about/impressum pages for emails and social links.",
+      "editor": "select",
+      "default": "homepageOnly",
+      "enum": [
+        "homepageOnly",
+        "contactPages"
+      ],
+      "enumTitles": [
+        "Homepage only",
+        "Homepage + contact pages"
+      ]
+    },
+    "websiteTimeoutSeconds": {
+      "title": "Website timeout",
+      "type": "integer",
+      "description": "Timeout for each website enrichment request. Keep this lower than the Google Maps timeout to avoid slow websites increasing run cost.",
+      "default": 8,
+      "minimum": 1,
+      "maximum": 30
+    },
+    "skipSocialWebsites": {
+      "title": "Skip social profile websites",
+      "type": "boolean",
+      "description": "Skip website enrichment when Google Maps lists a social profile such as Instagram, Facebook, LinkedIn, X, or Twitter. This is faster and avoids many 429 responses.",
+      "default": true
+    },
+    "leadFilters": {
+      "title": "Lead filters",
+      "type": "object",
+      "description": "Optional filters applied after full place details are fetched. Filtered places are skipped from Dataset output and reviews.",
+      "editor": "schemaBased",
+      "additionalProperties": false,
+      "properties": {
+        "minRating": {
+          "title": "Minimum rating",
+          "type": "number",
+          "description": "Skip places below this rating.",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "minReviewCount": {
+          "title": "Minimum review count",
+          "type": "integer",
+          "description": "Skip places below this review count.",
+          "minimum": 0
+        },
+        "mustHaveWebsite": {
+          "title": "Must have website",
+          "type": "boolean",
+          "description": "Only keep places with a website.",
+          "default": false
+        },
+        "mustHavePhone": {
+          "title": "Must have phone",
+          "type": "boolean",
+          "description": "Only keep places with a phone number.",
+          "default": false
+        },
+        "categoryIncludes": {
+          "title": "Category includes",
+          "type": "string",
+          "description": "Only keep places whose categories include this text, for example cafe.",
+          "editor": "textfield"
+        }
+      }
+    },
+    "enableSqliteCheckpoint": {
+      "title": "Enable SQLite checkpoint",
+      "type": "boolean",
+      "description": "Keep an internal SQLite copy for deduplication/checkpointing. Dataset remains the primary output.",
+      "default": false
+    },
+    "sqlitePath": {
+      "title": "SQLite path",
+      "type": "string",
+      "description": "Internal SQLite path when checkpointing is enabled.",
+      "default": "storage/key_value_stores/default/gmaps.db",
+      "editor": "textfield"
+    },
+    "enableBillingEvents": {
+      "title": "Enable billing events (legacy)",
+      "type": "boolean",
+      "description": "Legacy testing flag. Production monetization is enabled automatically when pay-per-event pricing is configured in Apify Console. For local tests, use ACTOR_TEST_PAY_PER_EVENT=true.",
+      "default": false
+    }
+  },
+  "required": [
+    "mode"
+  ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "x_schema_source": "apify_actor_metadata",
+  "x_verified": true
+}
