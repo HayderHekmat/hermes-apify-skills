@@ -1,0 +1,253 @@
+{
+  "name": "co_star_real_estate_scraper",
+  "version": "1.0.0",
+  "target": "hermes",
+  "source_url": "https://apify.com/solutionssmart/co-star-real-estate-scraper",
+  "description": "Scrapes publicly accessible pages from CoStar News GB and extracts article, property, and market signals when available.",
+  "capabilities": [
+    "CoStar Real Estate Scraper",
+    "Collect sale, acquisition, financing, refinancing and letting stories.",
+    "Monitor public news about developers, landlords, investors, occupiers and agents.",
+    "Build commercial real estate research datasets from public CoStar articles.",
+    "Export extracted property, transaction, media and company data to BI tools, CRMs, spreadsheets, dashboards or enrichment pipelines.",
+    "Automate recurring monitoring of new CoStar property news for market monitoring, lead generation, investment research and deal tracking."
+  ],
+  "inputs": [
+    {
+      "name": "startUrls",
+      "type": "array",
+      "description": "Public CoStar listing or section pages to seed the crawl.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "maxItems",
+      "type": "integer",
+      "description": "Maximum number of records to store in the dataset.",
+      "required": false,
+      "default": 50
+    },
+    {
+      "name": "maxRequestsPerCrawl",
+      "type": "integer",
+      "description": "Requested cap for total requests, including listing and detail pages. In filtered modes the actor may raise the effective cap so maxItems can be reached.",
+      "required": false,
+      "default": 200
+    },
+    {
+      "name": "maxConcurrency",
+      "type": "integer",
+      "description": "Maximum number of pages processed in parallel.",
+      "required": false,
+      "default": 3
+    },
+    {
+      "name": "desiredConcurrency",
+      "type": "integer",
+      "description": "Preferred steady-state parallelism target for the crawler.",
+      "required": false,
+      "default": 2
+    },
+    {
+      "name": "maxPaginationPages",
+      "type": "integer",
+      "description": "Requested number of listing pages to follow from seeded sections. In filtered modes the actor may raise the effective value so enough strict records can be found.",
+      "required": false,
+      "default": 20
+    },
+    {
+      "name": "includeArticleBody",
+      "type": "boolean",
+      "description": "Store the full cleaned article text when available.",
+      "required": false,
+      "default": true
+    },
+    {
+      "name": "includeHtml",
+      "type": "boolean",
+      "description": "Include raw article HTML in the dataset. This increases output size.",
+      "required": false,
+      "default": false
+    },
+    {
+      "name": "compactOutput",
+      "type": "boolean",
+      "description": "Remove null, empty, and static compatibility placeholder fields from dataset items. Disable only if you need the full compatibility schema.",
+      "required": false,
+      "default": true
+    },
+    {
+      "name": "onlyPropertyArticles",
+      "type": "boolean",
+      "description": "Skip generic newsroom articles that do not contain property-specific signals such as addresses, companies, prices, areas, or property types.",
+      "required": false,
+      "default": true
+    },
+    {
+      "name": "onlyUkArticles",
+      "type": "boolean",
+      "description": "Skip non-UK or globally focused articles when running against the CoStar GB news feed.",
+      "required": false,
+      "default": true
+    },
+    {
+      "name": "strictStoryMode",
+      "type": "boolean",
+      "description": "Keep only transaction, development, financing, sale, and letting stories. Drop people-moves, commentary, and broader market-analysis articles.",
+      "required": false,
+      "default": true
+    },
+    {
+      "name": "requireAddress",
+      "type": "boolean",
+      "description": "Skip otherwise valid records when no property address is exposed in the public article metadata.",
+      "required": false,
+      "default": false
+    },
+    {
+      "name": "includeFailedRecords",
+      "type": "boolean",
+      "description": "Store blocked or failed requests in the dataset. Disabled by default so output contains only successfully extracted records.",
+      "required": false,
+      "default": false
+    },
+    {
+      "name": "searchTerms",
+      "type": "array",
+      "description": "Optional terms used to add matchedSearchTerms to records that mention specific markets, tenants, or property types.",
+      "required": false,
+      "default": []
+    },
+    {
+      "name": "proxyConfiguration",
+      "type": "object",
+      "description": "Optional Apify proxy configuration. Recommended if CoStar blocks your requests.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "proxyInitializationTimeoutSecs",
+      "type": "integer",
+      "description": "Maximum seconds to wait while initializing proxy access before failing or falling back to direct connection.",
+      "required": false,
+      "default": 30
+    },
+    {
+      "name": "fallbackToNoProxyOnProxyError",
+      "type": "boolean",
+      "description": "If enabled, the Actor continues without proxy when proxy initialization fails or times out. Disable this when proxy usage is mandatory.",
+      "required": false,
+      "default": true
+    }
+  ],
+  "outputs": [],
+  "generated_by": "Hermes Skill Builder for Apify & APIs",
+  "readiness": {
+    "level": "executable",
+    "canRunDirectly": true,
+    "reason": "Actor slug, executable Apify endpoints, and verified input schema were extracted from Apify metadata. Conditional requirements were not inferred and a cost safety profile is available.",
+    "missing": []
+  },
+  "tool_call_contract": "tool_call_contract.json",
+  "schema_verified": true,
+  "source_metadata_type": "apify_api",
+  "conditionalRequirements": [],
+  "conditionalOnlyFields": [],
+  "defaultMode": null,
+  "fieldClassification": {
+    "basicUserFields": [
+      "startUrls",
+      "maxItems"
+    ],
+    "userFacingFields": [
+      "startUrls",
+      "maxItems"
+    ],
+    "advancedFields": [
+      "maxConcurrency",
+      "desiredConcurrency",
+      "proxyConfiguration",
+      "proxyInitializationTimeoutSecs",
+      "fallbackToNoProxyOnProxyError"
+    ],
+    "internalFields": [],
+    "highCostFields": [
+      "maxItems",
+      "maxRequestsPerCrawl",
+      "maxConcurrency",
+      "desiredConcurrency",
+      "maxPaginationPages",
+      "proxyConfiguration",
+      "proxyInitializationTimeoutSecs",
+      "fallbackToNoProxyOnProxyError"
+    ],
+    "conditionalOnlyFields": [],
+    "agentDefaultFields": [
+      "startUrls",
+      "maxItems"
+    ],
+    "askOnlyIfNeededFields": [
+      "maxConcurrency",
+      "desiredConcurrency",
+      "proxyConfiguration",
+      "proxyInitializationTimeoutSecs",
+      "fallbackToNoProxyOnProxyError",
+      "maxRequestsPerCrawl",
+      "maxPaginationPages"
+    ]
+  },
+  "agentInteractionPolicy": {
+    "defaultMode": null,
+    "conditionalOnlyFields": [],
+    "defaultAskFields": [
+      "startUrls",
+      "maxItems"
+    ],
+    "doNotAskFields": [],
+    "askOnlyIfNeededFields": [
+      "maxConcurrency",
+      "desiredConcurrency",
+      "proxyConfiguration",
+      "proxyInitializationTimeoutSecs",
+      "fallbackToNoProxyOnProxyError",
+      "maxRequestsPerCrawl",
+      "maxPaginationPages"
+    ],
+    "warnBeforeUsingFields": [
+      "maxItems",
+      "maxRequestsPerCrawl",
+      "maxConcurrency",
+      "desiredConcurrency",
+      "maxPaginationPages",
+      "proxyConfiguration",
+      "proxyInitializationTimeoutSecs",
+      "fallbackToNoProxyOnProxyError"
+    ]
+  },
+  "costSafetyProfile": {
+    "riskLevel": "high",
+    "defaultMode": null,
+    "recommendedTestInput": {
+      "maxItems": 5
+    },
+    "safeDefaults": {
+      "maxItems": 5
+    },
+    "highCostFields": [
+      "maxItems",
+      "maxRequestsPerCrawl",
+      "maxConcurrency",
+      "desiredConcurrency",
+      "maxPaginationPages",
+      "proxyConfiguration",
+      "proxyInitializationTimeoutSecs",
+      "fallbackToNoProxyOnProxyError"
+    ],
+    "agentGuidance": [
+      "Start with a small maxPlaces, maxItems, or maxResults value for test runs.",
+      "Disable review scraping unless explicitly requested.",
+      "Disable website enrichment for first validation runs.",
+      "Use async runs for large jobs."
+    ]
+  }
+}

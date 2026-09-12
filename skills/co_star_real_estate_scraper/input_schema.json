@@ -1,0 +1,132 @@
+{
+  "title": "CoStar Real Estate Scraper input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "startUrls": {
+      "title": "Start URLs",
+      "type": "array",
+      "description": "Public CoStar listing or section pages to seed the crawl.",
+      "editor": "requestListSources",
+      "prefill": [
+        {
+          "url": "https://www.costar.com/news/gb"
+        }
+      ]
+    },
+    "maxItems": {
+      "title": "Max output items",
+      "type": "integer",
+      "description": "Maximum number of records to store in the dataset.",
+      "default": 50,
+      "minimum": 1
+    },
+    "maxRequestsPerCrawl": {
+      "title": "Max requests per crawl",
+      "type": "integer",
+      "description": "Requested cap for total requests, including listing and detail pages. In filtered modes the actor may raise the effective cap so maxItems can be reached.",
+      "default": 200,
+      "minimum": 1
+    },
+    "maxConcurrency": {
+      "title": "Max concurrency",
+      "type": "integer",
+      "description": "Maximum number of pages processed in parallel.",
+      "default": 3,
+      "minimum": 1
+    },
+    "desiredConcurrency": {
+      "title": "Desired concurrency",
+      "type": "integer",
+      "description": "Preferred steady-state parallelism target for the crawler.",
+      "default": 2,
+      "minimum": 1
+    },
+    "maxPaginationPages": {
+      "title": "Max pagination pages",
+      "type": "integer",
+      "description": "Requested number of listing pages to follow from seeded sections. In filtered modes the actor may raise the effective value so enough strict records can be found.",
+      "default": 20,
+      "minimum": 1
+    },
+    "includeArticleBody": {
+      "title": "Include article body",
+      "type": "boolean",
+      "description": "Store the full cleaned article text when available.",
+      "default": true
+    },
+    "includeHtml": {
+      "title": "Include raw HTML",
+      "type": "boolean",
+      "description": "Include raw article HTML in the dataset. This increases output size.",
+      "default": false
+    },
+    "compactOutput": {
+      "title": "Compact output",
+      "type": "boolean",
+      "description": "Remove null, empty, and static compatibility placeholder fields from dataset items. Disable only if you need the full compatibility schema.",
+      "default": true
+    },
+    "onlyPropertyArticles": {
+      "title": "Only property articles",
+      "type": "boolean",
+      "description": "Skip generic newsroom articles that do not contain property-specific signals such as addresses, companies, prices, areas, or property types.",
+      "default": true
+    },
+    "onlyUkArticles": {
+      "title": "Only UK articles",
+      "type": "boolean",
+      "description": "Skip non-UK or globally focused articles when running against the CoStar GB news feed.",
+      "default": true
+    },
+    "strictStoryMode": {
+      "title": "Strict story mode",
+      "type": "boolean",
+      "description": "Keep only transaction, development, financing, sale, and letting stories. Drop people-moves, commentary, and broader market-analysis articles.",
+      "default": true
+    },
+    "requireAddress": {
+      "title": "Require address",
+      "type": "boolean",
+      "description": "Skip otherwise valid records when no property address is exposed in the public article metadata.",
+      "default": false
+    },
+    "includeFailedRecords": {
+      "title": "Include failed records",
+      "type": "boolean",
+      "description": "Store blocked or failed requests in the dataset. Disabled by default so output contains only successfully extracted records.",
+      "default": false
+    },
+    "searchTerms": {
+      "title": "Search terms",
+      "type": "array",
+      "description": "Optional terms used to add matchedSearchTerms to records that mention specific markets, tenants, or property types.",
+      "editor": "stringList",
+      "default": []
+    },
+    "proxyConfiguration": {
+      "title": "Proxy configuration",
+      "type": "object",
+      "description": "Optional Apify proxy configuration. Recommended if CoStar blocks your requests.",
+      "editor": "proxy"
+    },
+    "proxyInitializationTimeoutSecs": {
+      "title": "Proxy initialization timeout",
+      "type": "integer",
+      "description": "Maximum seconds to wait while initializing proxy access before failing or falling back to direct connection.",
+      "default": 30,
+      "minimum": 5
+    },
+    "fallbackToNoProxyOnProxyError": {
+      "title": "Fallback to direct connection on proxy error",
+      "type": "boolean",
+      "description": "If enabled, the Actor continues without proxy when proxy initialization fails or times out. Disable this when proxy usage is mandatory.",
+      "default": true
+    }
+  },
+  "required": [],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "x_schema_source": "apify_actor_metadata",
+  "x_verified": true
+}
