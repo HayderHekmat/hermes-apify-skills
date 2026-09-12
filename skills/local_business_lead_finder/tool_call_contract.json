@@ -1,0 +1,152 @@
+{
+  "platform": "apify",
+  "actorSlug": "solutionssmart/local-business-lead-finder",
+  "apiActorId": "solutionssmart~local-business-lead-finder",
+  "runEndpoint": "https://api.apify.com/v2/acts/solutionssmart~local-business-lead-finder/runs",
+  "runSyncEndpoint": "https://api.apify.com/v2/acts/solutionssmart~local-business-lead-finder/run-sync-get-dataset-items",
+  "requiresSecret": "APIFY_TOKEN",
+  "inputSchemaSource": "apify_actor_metadata",
+  "resultHandling": {
+    "defaultDataset": true,
+    "itemsEndpointPattern": "https://api.apify.com/v2/datasets/{defaultDatasetId}/items?format=json&clean=true"
+  },
+  "exampleInvocation": {
+    "method": "POST",
+    "url": "https://api.apify.com/v2/acts/solutionssmart~local-business-lead-finder/runs",
+    "headers": {
+      "Authorization": "Bearer ${APIFY_TOKEN}",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "queries": [
+        "dentist"
+      ],
+      "mode": "fast"
+    }
+  },
+  "conditionalRequirements": [],
+  "conditionalOnlyFields": [],
+  "defaultMode": "fast",
+  "fieldClassification": {
+    "basicUserFields": [
+      "mode",
+      "emailMxCheck"
+    ],
+    "userFacingFields": [
+      "mode",
+      "emailMxCheck"
+    ],
+    "advancedFields": [
+      "language",
+      "emailScanDepth",
+      "detailConcurrency",
+      "enrichmentConcurrency",
+      "proxyMode",
+      "proxyCountryCode"
+    ],
+    "internalFields": [
+      "debug"
+    ],
+    "highCostFields": [
+      "maxResultsTotal",
+      "enrichWebsite",
+      "emailScanDepth",
+      "maxWebsitesToEnrich",
+      "maxRunTimeSec",
+      "detailConcurrency",
+      "enrichmentConcurrency",
+      "proxyMode",
+      "proxyCountryCode"
+    ],
+    "conditionalOnlyFields": [],
+    "agentDefaultFields": [
+      "mode"
+    ],
+    "askOnlyIfNeededFields": [
+      "language",
+      "emailScanDepth",
+      "detailConcurrency",
+      "enrichmentConcurrency",
+      "proxyMode",
+      "proxyCountryCode",
+      "debug",
+      "maxResultsTotal",
+      "enrichWebsite",
+      "maxWebsitesToEnrich",
+      "maxRunTimeSec"
+    ]
+  },
+  "agentInteractionPolicy": {
+    "defaultMode": "fast",
+    "conditionalOnlyFields": [],
+    "defaultAskFields": [
+      "mode"
+    ],
+    "doNotAskFields": [
+      "debug"
+    ],
+    "askOnlyIfNeededFields": [
+      "language",
+      "emailScanDepth",
+      "detailConcurrency",
+      "enrichmentConcurrency",
+      "proxyMode",
+      "proxyCountryCode",
+      "debug",
+      "maxResultsTotal",
+      "enrichWebsite",
+      "maxWebsitesToEnrich",
+      "maxRunTimeSec"
+    ],
+    "warnBeforeUsingFields": [
+      "maxResultsTotal",
+      "enrichWebsite",
+      "emailScanDepth",
+      "maxWebsitesToEnrich",
+      "maxRunTimeSec",
+      "detailConcurrency",
+      "enrichmentConcurrency",
+      "proxyMode",
+      "proxyCountryCode"
+    ]
+  },
+  "costSafetyProfile": {
+    "riskLevel": "high",
+    "defaultMode": "fast",
+    "recommendedTestInput": {
+      "queries": [
+        "dentist"
+      ],
+      "mode": "fast"
+    },
+    "safeDefaults": {},
+    "highCostFields": [
+      "maxResultsTotal",
+      "enrichWebsite",
+      "emailScanDepth",
+      "maxWebsitesToEnrich",
+      "maxRunTimeSec",
+      "detailConcurrency",
+      "enrichmentConcurrency",
+      "proxyMode",
+      "proxyCountryCode"
+    ],
+    "agentGuidance": [
+      "Start with a small maxPlaces, maxItems, or maxResults value for test runs.",
+      "Disable review scraping unless explicitly requested.",
+      "Disable website enrichment for first validation runs.",
+      "Use async runs for large jobs."
+    ]
+  },
+  "validationGuidance": {
+    "beforeRun": [
+      "Validate input_schema.json.",
+      "Determine selected mode/action first.",
+      "Apply conditionalRequirements for the selected mode/action.",
+      "Ask for conditionalOnlyFields only when the selected condition requires them.",
+      "Do not ask for placeId during normal search/list workflows.",
+      "Apply safeDefaults for first test runs.",
+      "Do not enable high-cost fields unless user explicitly asks."
+    ]
+  }
+}

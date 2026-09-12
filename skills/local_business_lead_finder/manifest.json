@@ -1,0 +1,328 @@
+{
+  "name": "local_business_lead_finder",
+  "version": "1.0.0",
+  "target": "hermes",
+  "source_url": "https://apify.com/solutionssmart/local-business-lead-finder",
+  "description": "Discover, extract, and enrich local business leads from Google Maps. Find businesses by keyword and location, collect contact details, emails, and social profiles, and export clean, deduplicated data. Built for automation, CRMs, and recurring lead generation workflows.",
+  "capabilities": [
+    "Local Business Lead Finder (Google Maps Leads Scraper)",
+    "Build prospect lists of local businesses for sales outreach and agency prospecting (e.g., plumbers, restaurants, clinics).",
+    "Local SEO research: analyze competitors, business density, and presence by area.",
+    "Market research: track businesses by geography and status over time.",
+    "Scheduled lead refresh: run recurring discovery and only surface new or updated business leads."
+  ],
+  "inputs": [
+    {
+      "name": "queries",
+      "type": "array",
+      "description": "List of business types to find (e.g. ['dentist', 'pizza']).",
+      "required": true,
+      "default": [
+        "dentist"
+      ]
+    },
+    {
+      "name": "locations",
+      "type": "array",
+      "description": "List of locations to search in (e.g. ['Berlin', 'Hamburg']).",
+      "required": false,
+      "default": [
+        "Berlin, Germany"
+      ]
+    },
+    {
+      "name": "geo",
+      "type": "object",
+      "description": "Search by coordinates and radius instead of text location.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "maxResultsTotal",
+      "type": "integer",
+      "description": "Maximum number of unique leads to output for the whole run.",
+      "required": false,
+      "default": 10
+    },
+    {
+      "name": "language",
+      "type": "string",
+      "description": "Language for Google Maps interface.",
+      "required": false,
+      "default": "en"
+    },
+    {
+      "name": "includeClosed",
+      "type": "boolean",
+      "description": "If true, includes businesses marked as permanently closed.",
+      "required": false,
+      "default": false
+    },
+    {
+      "name": "mode",
+      "type": "string",
+      "description": "Fast mode extracts leads only. Deep mode enables website enrichment within the configured limits.",
+      "required": false,
+      "default": "fast"
+    },
+    {
+      "name": "enrichWebsite",
+      "type": "boolean",
+      "description": "Visit business websites to extract emails, phones, contact forms, and social links. Used only in deep mode.",
+      "required": false,
+      "default": false
+    },
+    {
+      "name": "emailScanDepth",
+      "type": "integer",
+      "description": "Number of internal pages to scan for emails (e.g. /contact).",
+      "required": false,
+      "default": 1
+    },
+    {
+      "name": "maxWebsitesToEnrich",
+      "type": "integer",
+      "description": "Maximum number of unique websites to visit in deep mode.",
+      "required": false,
+      "default": 25
+    },
+    {
+      "name": "maxRunTimeSec",
+      "type": "integer",
+      "description": "Gracefully stop the run when this runtime budget is reached.",
+      "required": false,
+      "default": 120
+    },
+    {
+      "name": "emailMxCheck",
+      "type": "boolean",
+      "description": "If true, checks MX records for extracted email domains to improve email-quality confidence. Slower and adds DNS requests.",
+      "required": false,
+      "default": false
+    },
+    {
+      "name": "dedupeBy",
+      "type": "string",
+      "description": "Field to use for deduplication.",
+      "required": false,
+      "default": "placeId"
+    },
+    {
+      "name": "newOnlyOutput",
+      "type": "boolean",
+      "description": "If true, outputs only new items not seen in previous runs. If false, outputs unique items from this run and marks them with isNew.",
+      "required": false,
+      "default": true
+    },
+    {
+      "name": "webhookUrl",
+      "type": "string",
+      "description": "URL to POST results to. Stored encrypted when saved (may contain auth tokens).",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "batchSize",
+      "type": "integer",
+      "description": "Number of items to batch before calling webhook.",
+      "required": false,
+      "default": 50
+    },
+    {
+      "name": "resourceProfile",
+      "type": "string",
+      "description": "Preset for concurrency based on the memory you allocate when starting the run.",
+      "required": false,
+      "default": "auto"
+    },
+    {
+      "name": "detailConcurrency",
+      "type": "integer",
+      "description": "Place detail pages fetched in parallel. If not set, uses the value from Resource profile.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "enrichmentConcurrency",
+      "type": "integer",
+      "description": "Website pages fetched in parallel during enrichment. If not set, uses the value from Resource profile.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "debug",
+      "type": "boolean",
+      "description": "Enable verbose logging (includes URLs and business details in logs; use only when needed).",
+      "required": false,
+      "default": false
+    },
+    {
+      "name": "proxyMode",
+      "type": "string",
+      "description": "Enable proxying. Google Maps uses Residential for browser compatibility and websites use Unblocker. Select Direct only for testing.",
+      "required": false,
+      "default": "unblocker"
+    },
+    {
+      "name": "proxyCountryCode",
+      "type": "string",
+      "description": "Optional two-letter country code, for example DE or US. Leave empty to let Unblocker choose.",
+      "required": false,
+      "default": null
+    }
+  ],
+  "outputs": [
+    {
+      "name": "place_name",
+      "type": "string",
+      "description": "Business or place name when available.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "address",
+      "type": "string",
+      "description": "Detected street address or location text when available.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "website",
+      "type": "string",
+      "description": "Business website URL when available.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "rating",
+      "type": "number",
+      "description": "Google Maps rating when available.",
+      "required": false,
+      "default": null
+    }
+  ],
+  "generated_by": "Hermes Skill Builder for Apify & APIs",
+  "readiness": {
+    "level": "executable",
+    "canRunDirectly": true,
+    "reason": "Actor slug, executable Apify endpoints, and verified input schema were extracted from Apify metadata. Conditional requirements were not inferred and a cost safety profile is available.",
+    "missing": []
+  },
+  "tool_call_contract": "tool_call_contract.json",
+  "schema_verified": true,
+  "source_metadata_type": "apify_api",
+  "conditionalRequirements": [],
+  "conditionalOnlyFields": [],
+  "defaultMode": "fast",
+  "fieldClassification": {
+    "basicUserFields": [
+      "mode",
+      "emailMxCheck"
+    ],
+    "userFacingFields": [
+      "mode",
+      "emailMxCheck"
+    ],
+    "advancedFields": [
+      "language",
+      "emailScanDepth",
+      "detailConcurrency",
+      "enrichmentConcurrency",
+      "proxyMode",
+      "proxyCountryCode"
+    ],
+    "internalFields": [
+      "debug"
+    ],
+    "highCostFields": [
+      "maxResultsTotal",
+      "enrichWebsite",
+      "emailScanDepth",
+      "maxWebsitesToEnrich",
+      "maxRunTimeSec",
+      "detailConcurrency",
+      "enrichmentConcurrency",
+      "proxyMode",
+      "proxyCountryCode"
+    ],
+    "conditionalOnlyFields": [],
+    "agentDefaultFields": [
+      "mode"
+    ],
+    "askOnlyIfNeededFields": [
+      "language",
+      "emailScanDepth",
+      "detailConcurrency",
+      "enrichmentConcurrency",
+      "proxyMode",
+      "proxyCountryCode",
+      "debug",
+      "maxResultsTotal",
+      "enrichWebsite",
+      "maxWebsitesToEnrich",
+      "maxRunTimeSec"
+    ]
+  },
+  "agentInteractionPolicy": {
+    "defaultMode": "fast",
+    "conditionalOnlyFields": [],
+    "defaultAskFields": [
+      "mode"
+    ],
+    "doNotAskFields": [
+      "debug"
+    ],
+    "askOnlyIfNeededFields": [
+      "language",
+      "emailScanDepth",
+      "detailConcurrency",
+      "enrichmentConcurrency",
+      "proxyMode",
+      "proxyCountryCode",
+      "debug",
+      "maxResultsTotal",
+      "enrichWebsite",
+      "maxWebsitesToEnrich",
+      "maxRunTimeSec"
+    ],
+    "warnBeforeUsingFields": [
+      "maxResultsTotal",
+      "enrichWebsite",
+      "emailScanDepth",
+      "maxWebsitesToEnrich",
+      "maxRunTimeSec",
+      "detailConcurrency",
+      "enrichmentConcurrency",
+      "proxyMode",
+      "proxyCountryCode"
+    ]
+  },
+  "costSafetyProfile": {
+    "riskLevel": "high",
+    "defaultMode": "fast",
+    "recommendedTestInput": {
+      "queries": [
+        "dentist"
+      ],
+      "mode": "fast"
+    },
+    "safeDefaults": {},
+    "highCostFields": [
+      "maxResultsTotal",
+      "enrichWebsite",
+      "emailScanDepth",
+      "maxWebsitesToEnrich",
+      "maxRunTimeSec",
+      "detailConcurrency",
+      "enrichmentConcurrency",
+      "proxyMode",
+      "proxyCountryCode"
+    ],
+    "agentGuidance": [
+      "Start with a small maxPlaces, maxItems, or maxResults value for test runs.",
+      "Disable review scraping unless explicitly requested.",
+      "Disable website enrichment for first validation runs.",
+      "Use async runs for large jobs."
+    ]
+  }
+}

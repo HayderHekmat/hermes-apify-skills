@@ -1,0 +1,288 @@
+{
+  "title": "📍 Local Business Lead Finder",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "queries": {
+      "title": "🔎 Search Queries",
+      "type": "array",
+      "description": "List of business types to find (e.g. ['dentist', 'pizza']).",
+      "editor": "stringList",
+      "prefill": [
+        "dentist"
+      ],
+      "default": [
+        "dentist"
+      ]
+    },
+    "locations": {
+      "title": "📍 Locations (Text)",
+      "type": "array",
+      "description": "List of locations to search in (e.g. ['Berlin', 'Hamburg']).",
+      "editor": "stringList",
+      "prefill": [
+        "Berlin, Germany"
+      ],
+      "default": [
+        "Berlin, Germany"
+      ]
+    },
+    "geo": {
+      "title": "🗺️ Location (Lat/Lng)",
+      "type": "object",
+      "description": "Search by coordinates and radius instead of text location.",
+      "editor": "schemaBased",
+      "properties": {
+        "lat": {
+          "title": "🧭 Latitude",
+          "type": "number",
+          "description": "Latitude coordinate",
+          "editor": "number"
+        },
+        "lng": {
+          "title": "🧭 Longitude",
+          "type": "number",
+          "description": "Longitude coordinate",
+          "editor": "number"
+        },
+        "radiusKm": {
+          "title": "📏 Radius (km)",
+          "type": "number",
+          "default": 5,
+          "description": "Search radius in kilometers",
+          "editor": "number"
+        }
+      }
+    },
+    "maxResultsTotal": {
+      "title": "📦 Max Results Total",
+      "type": "integer",
+      "description": "Maximum number of unique leads to output for the whole run.",
+      "default": 10
+    },
+    "language": {
+      "title": "🌐 Language",
+      "type": "string",
+      "description": "Language for Google Maps interface.",
+      "default": "en",
+      "editor": "select",
+      "enum": [
+        "en",
+        "en-gb",
+        "en-au",
+        "de",
+        "fr",
+        "es",
+        "it",
+        "pt",
+        "pt-br",
+        "nl",
+        "pl",
+        "ru",
+        "ja",
+        "zh-cn",
+        "zh-tw",
+        "ko",
+        "ar",
+        "hi",
+        "tr",
+        "sv",
+        "da",
+        "no",
+        "fi",
+        "el",
+        "cs",
+        "hu",
+        "ro",
+        "bg",
+        "th",
+        "vi",
+        "id",
+        "ms"
+      ],
+      "enumTitles": [
+        "English",
+        "English (UK)",
+        "English (Australia)",
+        "German",
+        "French",
+        "Spanish",
+        "Italian",
+        "Portuguese",
+        "Portuguese (Brazil)",
+        "Dutch",
+        "Polish",
+        "Russian",
+        "Japanese",
+        "Chinese (Simplified)",
+        "Chinese (Traditional)",
+        "Korean",
+        "Arabic",
+        "Hindi",
+        "Turkish",
+        "Swedish",
+        "Danish",
+        "Norwegian",
+        "Finnish",
+        "Greek",
+        "Czech",
+        "Hungarian",
+        "Romanian",
+        "Bulgarian",
+        "Thai",
+        "Vietnamese",
+        "Indonesian",
+        "Malay"
+      ]
+    },
+    "includeClosed": {
+      "title": "🏪 Include Closed Businesses",
+      "type": "boolean",
+      "description": "If true, includes businesses marked as permanently closed.",
+      "default": false
+    },
+    "mode": {
+      "title": "⚙️ Mode",
+      "type": "string",
+      "description": "Fast mode extracts leads only. Deep mode enables website enrichment within the configured limits.",
+      "default": "fast",
+      "editor": "select",
+      "enum": [
+        "fast",
+        "deep"
+      ],
+      "enumTitles": [
+        "Fast ⚡",
+        "Deep 🌐"
+      ]
+    },
+    "enrichWebsite": {
+      "title": "✨ Enrich With Website Data",
+      "type": "boolean",
+      "description": "Visit business websites to extract emails, phones, contact forms, and social links. Used only in deep mode.",
+      "default": false
+    },
+    "emailScanDepth": {
+      "title": "📬 Email Scan Depth",
+      "type": "integer",
+      "description": "Number of internal pages to scan for emails (e.g. /contact).",
+      "default": 1
+    },
+    "maxWebsitesToEnrich": {
+      "title": "🌐 Max Websites To Enrich",
+      "type": "integer",
+      "description": "Maximum number of unique websites to visit in deep mode.",
+      "default": 25
+    },
+    "maxRunTimeSec": {
+      "title": "⏱️ Max Run Time (sec)",
+      "type": "integer",
+      "description": "Gracefully stop the run when this runtime budget is reached.",
+      "default": 120
+    },
+    "emailMxCheck": {
+      "title": "🛡️ Verify Email Domains (MX)",
+      "type": "boolean",
+      "description": "If true, checks MX records for extracted email domains to improve email-quality confidence. Slower and adds DNS requests.",
+      "default": false
+    },
+    "dedupeBy": {
+      "title": "🧹 Deduplication Strategy",
+      "type": "string",
+      "description": "Field to use for deduplication.",
+      "enum": [
+        "placeId",
+        "website",
+        "phone"
+      ],
+      "default": "placeId"
+    },
+    "newOnlyOutput": {
+      "title": "🆕 Output Only New Items",
+      "type": "boolean",
+      "description": "If true, outputs only new items not seen in previous runs. If false, outputs unique items from this run and marks them with isNew.",
+      "default": true
+    },
+    "webhookUrl": {
+      "title": "🪝 Webhook URL",
+      "type": "string",
+      "description": "URL to POST results to. Stored encrypted when saved (may contain auth tokens).",
+      "editor": "textfield",
+      "isSecret": true
+    },
+    "batchSize": {
+      "title": "📬 Batch Size",
+      "type": "integer",
+      "description": "Number of items to batch before calling webhook.",
+      "default": 50
+    },
+    "resourceProfile": {
+      "title": "⚙️ Resource Profile (memory)",
+      "type": "string",
+      "description": "Preset for concurrency based on the memory you allocate when starting the run.",
+      "default": "auto",
+      "editor": "select",
+      "enum": [
+        "auto",
+        "low",
+        "standard",
+        "high"
+      ],
+      "enumTitles": [
+        "Auto 🚀",
+        "Low (4 GB) 🐢",
+        "Standard (4-8 GB) ⚖️",
+        "High (8 GB+) 🔥"
+      ]
+    },
+    "detailConcurrency": {
+      "title": "🚄 Detail Concurrency",
+      "type": "integer",
+      "description": "Place detail pages fetched in parallel. If not set, uses the value from Resource profile.",
+      "minimum": 1,
+      "maximum": 8
+    },
+    "enrichmentConcurrency": {
+      "title": "⚡ Enrichment Concurrency",
+      "type": "integer",
+      "description": "Website pages fetched in parallel during enrichment. If not set, uses the value from Resource profile.",
+      "minimum": 1,
+      "maximum": 20
+    },
+    "debug": {
+      "title": "🐞 Debug Mode",
+      "type": "boolean",
+      "description": "Enable verbose logging (includes URLs and business details in logs; use only when needed).",
+      "default": false
+    },
+    "proxyMode": {
+      "title": "Proxy Mode",
+      "type": "string",
+      "description": "Enable proxying. Google Maps uses Residential for browser compatibility and websites use Unblocker. Select Direct only for testing.",
+      "default": "unblocker",
+      "editor": "select",
+      "enum": [
+        "none",
+        "unblocker"
+      ],
+      "enumTitles": [
+        "Direct",
+        "Apify Unblocker"
+      ]
+    },
+    "proxyCountryCode": {
+      "title": "Unblocker Country Code",
+      "type": "string",
+      "description": "Optional two-letter country code, for example DE or US. Leave empty to let Unblocker choose.",
+      "editor": "textfield",
+      "pattern": "^[A-Za-z]{2}$"
+    }
+  },
+  "required": [
+    "queries"
+  ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "x_schema_source": "apify_actor_metadata",
+  "x_verified": true
+}
