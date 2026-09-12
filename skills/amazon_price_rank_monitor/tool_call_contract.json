@@ -1,0 +1,101 @@
+{
+  "platform": "apify",
+  "actorSlug": "solutionssmart/amazon-price-rank-monitor",
+  "apiActorId": "solutionssmart~amazon-price-rank-monitor",
+  "runEndpoint": "https://api.apify.com/v2/acts/solutionssmart~amazon-price-rank-monitor/runs",
+  "runSyncEndpoint": "https://api.apify.com/v2/acts/solutionssmart~amazon-price-rank-monitor/run-sync-get-dataset-items",
+  "requiresSecret": "APIFY_TOKEN",
+  "inputSchemaSource": "apify_actor_metadata",
+  "resultHandling": {
+    "defaultDataset": true,
+    "itemsEndpointPattern": "https://api.apify.com/v2/datasets/{defaultDatasetId}/items?format=json&clean=true"
+  },
+  "exampleInvocation": {
+    "method": "POST",
+    "url": "https://api.apify.com/v2/acts/solutionssmart~amazon-price-rank-monitor/runs",
+    "headers": {
+      "Authorization": "Bearer ${APIFY_TOKEN}",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "marketplace": "amazon.com",
+      "deduplicate": true,
+      "onlyChanges": false,
+      "maxConcurrency": 3,
+      "maxRequestRetries": 6,
+      "requestTimeoutSecs": 60
+    }
+  },
+  "conditionalRequirements": [],
+  "conditionalOnlyFields": [],
+  "defaultMode": null,
+  "fieldClassification": {
+    "basicUserFields": [],
+    "userFacingFields": [],
+    "advancedFields": [
+      "maxConcurrency",
+      "maxRequestRetries",
+      "requestTimeoutSecs",
+      "proxyConfiguration"
+    ],
+    "internalFields": [],
+    "highCostFields": [
+      "maxConcurrency",
+      "maxRequestRetries",
+      "proxyConfiguration"
+    ],
+    "conditionalOnlyFields": [],
+    "agentDefaultFields": [],
+    "askOnlyIfNeededFields": [
+      "maxConcurrency",
+      "maxRequestRetries",
+      "requestTimeoutSecs",
+      "proxyConfiguration"
+    ]
+  },
+  "agentInteractionPolicy": {
+    "defaultMode": null,
+    "conditionalOnlyFields": [],
+    "defaultAskFields": [],
+    "doNotAskFields": [],
+    "askOnlyIfNeededFields": [
+      "maxConcurrency",
+      "maxRequestRetries",
+      "requestTimeoutSecs",
+      "proxyConfiguration"
+    ],
+    "warnBeforeUsingFields": [
+      "maxConcurrency",
+      "maxRequestRetries",
+      "proxyConfiguration"
+    ]
+  },
+  "costSafetyProfile": {
+    "riskLevel": "high",
+    "defaultMode": null,
+    "recommendedTestInput": {},
+    "safeDefaults": {},
+    "highCostFields": [
+      "maxConcurrency",
+      "maxRequestRetries",
+      "proxyConfiguration"
+    ],
+    "agentGuidance": [
+      "Start with a small maxPlaces, maxItems, or maxResults value for test runs.",
+      "Disable review scraping unless explicitly requested.",
+      "Disable website enrichment for first validation runs.",
+      "Use async runs for large jobs."
+    ]
+  },
+  "validationGuidance": {
+    "beforeRun": [
+      "Validate input_schema.json.",
+      "Determine selected mode/action first.",
+      "Apply conditionalRequirements for the selected mode/action.",
+      "Ask for conditionalOnlyFields only when the selected condition requires them.",
+      "Do not ask for placeId during normal search/list workflows.",
+      "Apply safeDefaults for first test runs.",
+      "Do not enable high-cost fields unless user explicitly asks."
+    ]
+  }
+}

@@ -1,0 +1,217 @@
+{
+  "$schema": "https://apify.com/schemas/v1/input.ide.json",
+  "title": "📈 Amazon Price & Rank Monitor input",
+  "description": "Track Amazon price and visible rank changes over time from ASINs, product URLs, or optional CSV/XLSX imports. The actor normalizes, deduplicates, snapshots, and compares results across runs.",
+  "type": "object",
+  "schemaVersion": 1,
+  "additionalProperties": false,
+  "properties": {
+    "asins": {
+      "title": "🔢 ASIN list",
+      "type": "array",
+      "description": "List of Amazon ASINs to monitor in the default marketplace.",
+      "editor": "stringList",
+      "minItems": 1,
+      "prefill": [
+        "B08N5WRWNW",
+        "B09G3HRMVB",
+        "B00008OE6I"
+      ]
+    },
+    "products": {
+      "title": "🔗 Mixed product inputs",
+      "type": "array",
+      "description": "Optional mixed array with ASIN, URL, and per-item marketplace overrides.",
+      "editor": "schemaBased",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "asin": {
+            "title": "🔠 ASIN",
+            "type": "string",
+            "description": "Amazon ASIN. 10 alphanumeric characters."
+          },
+          "url": {
+            "title": "🌐 Product URL",
+            "type": "string",
+            "description": "Amazon product URL. If provided, the actor extracts the ASIN first."
+          },
+          "marketplace": {
+            "title": "🏪 Marketplace",
+            "type": "string",
+            "description": "Optional marketplace override for this item.",
+            "editor": "select",
+            "enumSuggestedValues": [
+              "amazon.com",
+              "amazon.co.uk",
+              "amazon.de",
+              "amazon.fr",
+              "amazon.it",
+              "amazon.es",
+              "amazon.ca",
+              "amazon.com.mx",
+              "amazon.co.jp",
+              "amazon.com.au",
+              "amazon.in"
+            ]
+          }
+        }
+      }
+    },
+    "fileImport": {
+      "title": "📄 Optional CSV / XLSX import",
+      "type": "object",
+      "description": "Optional remote file import for large batch monitoring. Keep it simple: one ASIN column or mapped ASIN / marketplace / URL columns.",
+      "editor": "schemaBased",
+      "properties": {
+        "inputSource": {
+          "title": "🧾 File type",
+          "type": "string",
+          "description": "Choose whether the optional file import uses CSV or XLSX format.",
+          "editor": "select",
+          "enum": [
+            "csv",
+            "xlsx"
+          ]
+        },
+        "fileUrl": {
+          "title": "🔗 File URL",
+          "type": "string",
+          "description": "Public CSV or XLSX file URL.",
+          "editor": "textfield"
+        },
+        "sheetName": {
+          "title": "📑 Excel sheet name",
+          "type": "string",
+          "description": "Optional worksheet name for XLSX imports.",
+          "editor": "textfield"
+        },
+        "asinColumnName": {
+          "title": "🔤 Simple ASIN column name",
+          "type": "string",
+          "description": "Use this for a simple one-column ASIN import.",
+          "editor": "textfield"
+        },
+        "asinColumn": {
+          "title": "#️⃣ Simple ASIN column index",
+          "type": "integer",
+          "minimum": 0,
+          "description": "Alternative zero-based ASIN column index for simple import."
+        },
+        "columnMapping": {
+          "title": "🗺️ Advanced column mapping",
+          "type": "object",
+          "description": "Optional mapped columns for ASIN, marketplace, and URL.",
+          "properties": {
+            "asinColumnName": {
+              "type": "string",
+              "title": "🔤 ASIN column name",
+              "description": "Column name containing ASIN values."
+            },
+            "asinColumn": {
+              "type": "integer",
+              "title": "#️⃣ ASIN column index",
+              "description": "Zero-based ASIN column index.",
+              "minimum": 0
+            },
+            "marketplaceColumnName": {
+              "type": "string",
+              "title": "🏪 Marketplace column name",
+              "description": "Column name containing marketplace values."
+            },
+            "marketplaceColumn": {
+              "type": "integer",
+              "title": "#️⃣ Marketplace column index",
+              "description": "Zero-based marketplace column index.",
+              "minimum": 0
+            },
+            "urlColumnName": {
+              "type": "string",
+              "title": "🌐 URL column name",
+              "description": "Column name containing Amazon product URLs."
+            },
+            "urlColumn": {
+              "type": "integer",
+              "title": "#️⃣ URL column index",
+              "description": "Zero-based URL column index.",
+              "minimum": 0
+            }
+          }
+        },
+        "batchSize": {
+          "title": "📦 Batch size",
+          "type": "integer",
+          "description": "Preparation batch size hint for large file imports.",
+          "default": 1000,
+          "minimum": 1,
+          "maximum": 10000
+        }
+      }
+    },
+    "marketplace": {
+      "title": "🏪 Default marketplace",
+      "type": "string",
+      "description": "Default Amazon marketplace for ASIN-only entries.",
+      "default": "amazon.com",
+      "editor": "select",
+      "enumSuggestedValues": [
+        "amazon.com",
+        "amazon.co.uk",
+        "amazon.de",
+        "amazon.fr",
+        "amazon.it",
+        "amazon.es",
+        "amazon.ca",
+        "amazon.com.mx",
+        "amazon.co.jp",
+        "amazon.com.au",
+        "amazon.in"
+      ]
+    },
+    "deduplicate": {
+      "title": "🧹 Deduplicate before crawl",
+      "type": "boolean",
+      "description": "Deduplicate inputs by marketplace + normalized ASIN before browser work.",
+      "default": true
+    },
+    "onlyChanges": {
+      "title": "🚨 Write only changed items",
+      "type": "boolean",
+      "description": "If enabled, only items with price or rank changes are written to the dataset. Summary counters are still produced for the full run.",
+      "default": false
+    },
+    "maxConcurrency": {
+      "title": "⚙️ Max concurrency",
+      "type": "integer",
+      "description": "Maximum number of Amazon pages processed at the same time.",
+      "default": 3,
+      "minimum": 1,
+      "maximum": 20
+    },
+    "maxRequestRetries": {
+      "title": "🔁 Max request retries",
+      "type": "integer",
+      "description": "Retry count for transient page failures.",
+      "default": 6,
+      "minimum": 0,
+      "maximum": 20
+    },
+    "requestTimeoutSecs": {
+      "title": "⏱️ Request timeout (seconds)",
+      "type": "integer",
+      "description": "Navigation and extraction timeout per product page.",
+      "default": 60,
+      "minimum": 15,
+      "maximum": 180
+    },
+    "proxyConfiguration": {
+      "title": "🛡️ Proxy configuration",
+      "type": "object",
+      "description": "Strongly recommended for Amazon monitoring runs at scale.",
+      "editor": "proxy"
+    }
+  },
+  "x_schema_source": "apify_actor_metadata",
+  "x_verified": true
+}

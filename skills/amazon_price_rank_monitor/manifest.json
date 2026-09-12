@@ -1,0 +1,157 @@
+{
+  "name": "amazon_price_rank_monitor",
+  "version": "1.0.0",
+  "target": "hermes",
+  "source_url": "https://apify.com/solutionssmart/amazon-price-rank-monitor",
+  "description": "Amazon price and visible rank monitor for ASINs and product URLs with snapshot comparison, change detection, and automation-ready output.",
+  "capabilities": [
+    "Amazon Price & Rank Monitor",
+    "Monitor large Amazon ASIN lists for price changes"
+  ],
+  "inputs": [
+    {
+      "name": "asins",
+      "type": "array",
+      "description": "List of Amazon ASINs to monitor in the default marketplace.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "products",
+      "type": "array",
+      "description": "Optional mixed array with ASIN, URL, and per-item marketplace overrides.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "fileImport",
+      "type": "object",
+      "description": "Optional remote file import for large batch monitoring. Keep it simple: one ASIN column or mapped ASIN / marketplace / URL columns.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "marketplace",
+      "type": "string",
+      "description": "Default Amazon marketplace for ASIN-only entries.",
+      "required": false,
+      "default": "amazon.com"
+    },
+    {
+      "name": "deduplicate",
+      "type": "boolean",
+      "description": "Deduplicate inputs by marketplace + normalized ASIN before browser work.",
+      "required": false,
+      "default": true
+    },
+    {
+      "name": "onlyChanges",
+      "type": "boolean",
+      "description": "If enabled, only items with price or rank changes are written to the dataset. Summary counters are still produced for the full run.",
+      "required": false,
+      "default": false
+    },
+    {
+      "name": "maxConcurrency",
+      "type": "integer",
+      "description": "Maximum number of Amazon pages processed at the same time.",
+      "required": false,
+      "default": 3
+    },
+    {
+      "name": "maxRequestRetries",
+      "type": "integer",
+      "description": "Retry count for transient page failures.",
+      "required": false,
+      "default": 6
+    },
+    {
+      "name": "requestTimeoutSecs",
+      "type": "integer",
+      "description": "Navigation and extraction timeout per product page.",
+      "required": false,
+      "default": 60
+    },
+    {
+      "name": "proxyConfiguration",
+      "type": "object",
+      "description": "Strongly recommended for Amazon monitoring runs at scale.",
+      "required": false,
+      "default": null
+    }
+  ],
+  "outputs": [],
+  "generated_by": "Hermes Skill Builder for Apify & APIs",
+  "readiness": {
+    "level": "validated",
+    "canRunDirectly": true,
+    "reason": "Actor slug and meaningful Apify metadata were detected, but the input schema is not fully verified.",
+    "missing": [
+      "confirmed required fields"
+    ]
+  },
+  "tool_call_contract": "tool_call_contract.json",
+  "schema_verified": true,
+  "source_metadata_type": "apify_api",
+  "conditionalRequirements": [],
+  "conditionalOnlyFields": [],
+  "defaultMode": null,
+  "fieldClassification": {
+    "basicUserFields": [],
+    "userFacingFields": [],
+    "advancedFields": [
+      "maxConcurrency",
+      "maxRequestRetries",
+      "requestTimeoutSecs",
+      "proxyConfiguration"
+    ],
+    "internalFields": [],
+    "highCostFields": [
+      "maxConcurrency",
+      "maxRequestRetries",
+      "proxyConfiguration"
+    ],
+    "conditionalOnlyFields": [],
+    "agentDefaultFields": [],
+    "askOnlyIfNeededFields": [
+      "maxConcurrency",
+      "maxRequestRetries",
+      "requestTimeoutSecs",
+      "proxyConfiguration"
+    ]
+  },
+  "agentInteractionPolicy": {
+    "defaultMode": null,
+    "conditionalOnlyFields": [],
+    "defaultAskFields": [],
+    "doNotAskFields": [],
+    "askOnlyIfNeededFields": [
+      "maxConcurrency",
+      "maxRequestRetries",
+      "requestTimeoutSecs",
+      "proxyConfiguration"
+    ],
+    "warnBeforeUsingFields": [
+      "maxConcurrency",
+      "maxRequestRetries",
+      "proxyConfiguration"
+    ]
+  },
+  "costSafetyProfile": {
+    "riskLevel": "high",
+    "defaultMode": null,
+    "recommendedTestInput": {},
+    "safeDefaults": {},
+    "highCostFields": [
+      "maxConcurrency",
+      "maxRequestRetries",
+      "proxyConfiguration"
+    ],
+    "agentGuidance": [
+      "Start with a small maxPlaces, maxItems, or maxResults value for test runs.",
+      "Disable review scraping unless explicitly requested.",
+      "Disable website enrichment for first validation runs.",
+      "Use async runs for large jobs."
+    ]
+  }
+}
