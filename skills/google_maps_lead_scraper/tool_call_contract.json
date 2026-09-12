@@ -1,0 +1,213 @@
+{
+  "platform": "apify",
+  "actorSlug": "solutionssmart/google-maps-lead-scraper",
+  "apiActorId": "solutionssmart~google-maps-lead-scraper",
+  "runEndpoint": "https://api.apify.com/v2/acts/solutionssmart~google-maps-lead-scraper/runs",
+  "runSyncEndpoint": "https://api.apify.com/v2/acts/solutionssmart~google-maps-lead-scraper/run-sync-get-dataset-items",
+  "requiresSecret": "APIFY_TOKEN",
+  "inputSchemaSource": "apify_actor_metadata",
+  "resultHandling": {
+    "defaultDataset": true,
+    "itemsEndpointPattern": "https://api.apify.com/v2/datasets/{defaultDatasetId}/items?format=json&clean=true"
+  },
+  "exampleInvocation": {
+    "method": "POST",
+    "url": "https://api.apify.com/v2/acts/solutionssmart~google-maps-lead-scraper/runs",
+    "headers": {
+      "Authorization": "Bearer ${APIFY_TOKEN}",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "maxPlaces": 5,
+      "maxResults": 5,
+      "includeReviews": 0
+    }
+  },
+  "conditionalRequirements": [],
+  "conditionalOnlyFields": [],
+  "defaultMode": "fast",
+  "fieldClassification": {
+    "basicUserFields": [
+      "searchQueries",
+      "location",
+      "categories",
+      "minRating",
+      "targetCategory",
+      "maxPlaces",
+      "maxResults",
+      "mode",
+      "includeReviews"
+    ],
+    "userFacingFields": [
+      "searchQueries",
+      "location",
+      "categories",
+      "minRating",
+      "targetCategory",
+      "maxPlaces",
+      "maxResults",
+      "mode",
+      "includeReviews"
+    ],
+    "advancedFields": [
+      "geolocation",
+      "customGeolocation",
+      "useProxy",
+      "maxConcurrency",
+      "detailsConcurrency",
+      "enableDetailsConcurrencyOverride",
+      "contactEnrichmentConcurrency",
+      "navigationTimeout"
+    ],
+    "internalFields": [],
+    "highCostFields": [
+      "maxPlaces",
+      "maxProfiles",
+      "maxEnrichments",
+      "maxResults",
+      "maxRunTimeSec",
+      "maxCrawledPlacesPerSearch",
+      "enableEnrichment",
+      "includePlaceDetails",
+      "includeEnrichment",
+      "includeReviews",
+      "useProxy",
+      "maxConcurrency",
+      "detailsConcurrency",
+      "enableDetailsConcurrencyOverride",
+      "contactEnrichmentConcurrency",
+      "rateLimit",
+      "maxDetailsToFetch",
+      "n8nPromptMaxBytes"
+    ],
+    "conditionalOnlyFields": [],
+    "agentDefaultFields": [
+      "location",
+      "maxPlaces",
+      "maxResults",
+      "mode"
+    ],
+    "askOnlyIfNeededFields": [
+      "geolocation",
+      "customGeolocation",
+      "useProxy",
+      "maxConcurrency",
+      "detailsConcurrency",
+      "enableDetailsConcurrencyOverride",
+      "contactEnrichmentConcurrency",
+      "navigationTimeout",
+      "maxProfiles",
+      "maxEnrichments",
+      "maxRunTimeSec",
+      "maxCrawledPlacesPerSearch",
+      "enableEnrichment",
+      "includePlaceDetails",
+      "includeEnrichment",
+      "rateLimit",
+      "maxDetailsToFetch",
+      "n8nPromptMaxBytes"
+    ]
+  },
+  "agentInteractionPolicy": {
+    "defaultMode": "fast",
+    "conditionalOnlyFields": [],
+    "defaultAskFields": [
+      "location",
+      "maxPlaces",
+      "maxResults",
+      "mode"
+    ],
+    "doNotAskFields": [],
+    "askOnlyIfNeededFields": [
+      "geolocation",
+      "customGeolocation",
+      "useProxy",
+      "maxConcurrency",
+      "detailsConcurrency",
+      "enableDetailsConcurrencyOverride",
+      "contactEnrichmentConcurrency",
+      "navigationTimeout",
+      "maxProfiles",
+      "maxEnrichments",
+      "maxRunTimeSec",
+      "maxCrawledPlacesPerSearch",
+      "enableEnrichment",
+      "includePlaceDetails",
+      "includeEnrichment",
+      "rateLimit",
+      "maxDetailsToFetch",
+      "n8nPromptMaxBytes"
+    ],
+    "warnBeforeUsingFields": [
+      "maxPlaces",
+      "maxProfiles",
+      "maxEnrichments",
+      "maxResults",
+      "maxRunTimeSec",
+      "maxCrawledPlacesPerSearch",
+      "enableEnrichment",
+      "includePlaceDetails",
+      "includeEnrichment",
+      "includeReviews",
+      "useProxy",
+      "maxConcurrency",
+      "detailsConcurrency",
+      "enableDetailsConcurrencyOverride",
+      "contactEnrichmentConcurrency",
+      "rateLimit",
+      "maxDetailsToFetch",
+      "n8nPromptMaxBytes"
+    ]
+  },
+  "costSafetyProfile": {
+    "riskLevel": "high",
+    "defaultMode": "fast",
+    "recommendedTestInput": {
+      "maxPlaces": 5,
+      "maxResults": 5,
+      "includeReviews": 0
+    },
+    "safeDefaults": {
+      "maxPlaces": 5,
+      "maxResults": 5,
+      "includeReviews": 0
+    },
+    "highCostFields": [
+      "maxPlaces",
+      "maxProfiles",
+      "maxEnrichments",
+      "maxResults",
+      "maxRunTimeSec",
+      "maxCrawledPlacesPerSearch",
+      "enableEnrichment",
+      "includePlaceDetails",
+      "includeEnrichment",
+      "includeReviews",
+      "useProxy",
+      "maxConcurrency",
+      "detailsConcurrency",
+      "enableDetailsConcurrencyOverride",
+      "contactEnrichmentConcurrency",
+      "rateLimit",
+      "maxDetailsToFetch",
+      "n8nPromptMaxBytes"
+    ],
+    "agentGuidance": [
+      "Start with a small maxPlaces, maxItems, or maxResults value for test runs.",
+      "Disable review scraping unless explicitly requested.",
+      "Disable website enrichment for first validation runs.",
+      "Use async runs for large jobs."
+    ]
+  },
+  "validationGuidance": {
+    "beforeRun": [
+      "Validate input_schema.json.",
+      "Determine selected mode/action first.",
+      "Apply conditionalRequirements for the selected mode/action.",
+      "Ask for conditionalOnlyFields only when the selected condition requires them.",
+      "Do not ask for placeId during normal search/list workflows.",
+      "Apply safeDefaults for first test runs.",
+      "Do not enable high-cost fields unless user explicitly asks."
+    ]
+  }
+}

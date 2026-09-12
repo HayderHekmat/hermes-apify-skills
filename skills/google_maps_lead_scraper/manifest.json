@@ -1,0 +1,638 @@
+{
+  "name": "google_maps_lead_scraper",
+  "version": "1.0.0",
+  "target": "hermes",
+  "source_url": "https://apify.com/solutionssmart/google-maps-lead-scraper",
+  "description": "Turn Google Maps into an automated sales machine. Identify high-value prospects with built-in lead scoring and contact extraction. Our unique 'Monitor' technology ensures you never scrape the same business twice, delivering fresh, high-intent leads directly to your workflow every day.",
+  "capabilities": [
+    "Google Maps Lead Scraper",
+    "Recurring market intelligence: schedule baseline and incremental scans to emit only net-new or changed businesses for ongoing monitoring.",
+    "Lead prioritization and routing: generate ranked, scored lead lists and actionable contact enrichment (emails, contact forms, social links) for outreach sequencing."
+  ],
+  "inputs": [
+    {
+      "name": "searchQueries",
+      "type": "array",
+      "description": "One Google Maps search term per item, for example dentist or dental clinic.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "searchQueriesText",
+      "type": "string",
+      "description": "Optional newline- or comma-separated search queries. The Actor normalizes this into searchQueries before the crawl starts.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "location",
+      "type": "string",
+      "description": "Enter a city, region, or country. Example: Berlin, Germany. This stays a standard Google Maps text search unless you also provide geolocation fields or a custom geolocation.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "geolocation",
+      "type": "object",
+      "description": "Optional OpenStreetMap/Nominatim fields for more precise matching than free-text location alone.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "expandAreaWhenResultsLow",
+      "type": "boolean",
+      "description": "Keep the normal text search first, then explore nearby map areas only if the first search page returns a sparse result set.",
+      "required": false,
+      "default": false
+    },
+    {
+      "name": "customGeolocation",
+      "type": "object",
+      "description": "Optional geometry override for direct point or polygon targeting.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "categories",
+      "type": "array",
+      "description": "Optional include filter for Google Maps business categories.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "excludedCategories",
+      "type": "array",
+      "description": "Optional exclude filter for categories you do not want in the final dataset.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "minRating",
+      "type": "number",
+      "description": "Optional minimum Google rating.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "businessStatus",
+      "type": "string",
+      "description": "Filter by open or closed status when Google Maps exposes it.",
+      "required": false,
+      "default": "any"
+    },
+    {
+      "name": "targetCategory",
+      "type": "string",
+      "description": "Optional category hint used to boost opportunity scoring.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "maxPlaces",
+      "type": "integer",
+      "description": "Stop when this many valid places have been pushed to the dataset.",
+      "required": false,
+      "default": 50
+    },
+    {
+      "name": "maxProfiles",
+      "type": "integer",
+      "description": "Hard cap for successfully opened Google Maps profile pages in deep mode.",
+      "required": false,
+      "default": 30
+    },
+    {
+      "name": "maxEnrichments",
+      "type": "integer",
+      "description": "Hard cap for website contact-enrichment attempts in deep mode.",
+      "required": false,
+      "default": 20
+    },
+    {
+      "name": "maxResults",
+      "type": "integer",
+      "description": "Optional secondary cap. If both maxPlaces and maxResults are set, the lower limit wins.",
+      "required": false,
+      "default": 50
+    },
+    {
+      "name": "maxRunTimeSec",
+      "type": "integer",
+      "description": "Stop the run once this runtime budget is exceeded to prevent excessive cost.",
+      "required": false,
+      "default": 120
+    },
+    {
+      "name": "maxCrawledPlacesPerSearch",
+      "type": "integer",
+      "description": "Optional cap per search query before filtering and post-processing.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "mode",
+      "type": "string",
+      "description": "Fast mode is list-only and cheapest. Deep mode allows profile opening and enrichment with strict caps.",
+      "required": false,
+      "default": "fast"
+    },
+    {
+      "name": "openProfiles",
+      "type": "boolean",
+      "description": "Allow profile-page opening in deep mode. Forced off in fast mode.",
+      "required": false,
+      "default": false
+    },
+    {
+      "name": "enableEnrichment",
+      "type": "boolean",
+      "description": "Allow website contact enrichment in deep mode. Forced off in fast mode.",
+      "required": false,
+      "default": false
+    },
+    {
+      "name": "leadMode",
+      "type": "boolean",
+      "description": "Legacy convenience toggle that switches the Actor into deep mode with profiles and enrichment enabled.",
+      "required": false,
+      "default": false
+    },
+    {
+      "name": "includePlaceDetails",
+      "type": "boolean",
+      "description": "Legacy compatibility flag. In production flows, prefer openProfiles plus mode.",
+      "required": false,
+      "default": false
+    },
+    {
+      "name": "includeContacts",
+      "type": "boolean",
+      "description": "Visit each business website and extract public contact details.",
+      "required": false,
+      "default": false
+    },
+    {
+      "name": "includeEnrichment",
+      "type": "boolean",
+      "description": "Add lead-prioritization fields for downstream sales workflows.",
+      "required": false,
+      "default": false
+    },
+    {
+      "name": "generateIcebreakers",
+      "type": "boolean",
+      "description": "Reserved AI-friendly toggle for downstream workflows.",
+      "required": false,
+      "default": false
+    },
+    {
+      "name": "includeReviews",
+      "type": "boolean",
+      "description": "Collect Google reviews for deeper research.",
+      "required": false,
+      "default": false
+    },
+    {
+      "name": "includeImages",
+      "type": "boolean",
+      "description": "Collect place image metadata when available.",
+      "required": false,
+      "default": false
+    },
+    {
+      "name": "includeReviewerNames",
+      "type": "boolean",
+      "description": "When false, review outputs omit reviewer names.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "minimalLogging",
+      "type": "boolean",
+      "description": "Reduce place titles, full addresses, and full URLs in logs.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "useProxy",
+      "type": "boolean",
+      "description": "Recommended for better reliability on Google Maps.",
+      "required": false,
+      "default": true
+    },
+    {
+      "name": "maxConcurrency",
+      "type": "integer",
+      "description": "Overall browser concurrency for the crawl.",
+      "required": false,
+      "default": 2
+    },
+    {
+      "name": "detailsConcurrency",
+      "type": "integer",
+      "description": "Optional separate concurrency for detail-page work when enableDetailsConcurrencyOverride is true.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "enableDetailsConcurrencyOverride",
+      "type": "boolean",
+      "description": "Use detailsConcurrency instead of maxConcurrency for detail pages.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "contactEnrichmentConcurrency",
+      "type": "integer",
+      "description": "Optional separate concurrency for website contact enrichment.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "rateLimit",
+      "type": "string",
+      "description": "Pick a crawl pacing strategy.",
+      "required": false,
+      "default": "adaptive"
+    },
+    {
+      "name": "navigationTimeout",
+      "type": "integer",
+      "description": "Increase if Google Maps or target websites are slow.",
+      "required": false,
+      "default": 90
+    },
+    {
+      "name": "maxDetailsToFetch",
+      "type": "integer",
+      "description": "Optional cap for detail-page enrichment.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "runMode",
+      "type": "string",
+      "description": "Use fresh for a baseline and incremental for new or changed businesses only.",
+      "required": false,
+      "default": "fresh"
+    },
+    {
+      "name": "detectUpdates",
+      "type": "boolean",
+      "description": "When incremental mode is enabled, compare current results with saved state.",
+      "required": false,
+      "default": true
+    },
+    {
+      "name": "stateKey",
+      "type": "string",
+      "description": "Key-value store record used for incremental state.",
+      "required": false,
+      "default": "places-state"
+    },
+    {
+      "name": "resetState",
+      "type": "boolean",
+      "description": "Delete the saved incremental snapshot before the run starts.",
+      "required": false,
+      "default": false
+    },
+    {
+      "name": "dedupeStrategy",
+      "type": "string",
+      "description": "Choose how recurring runs identify the same business.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "updateFields",
+      "type": "array",
+      "description": "Fields compared between runs to detect updates.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "enableCaching",
+      "type": "boolean",
+      "description": "Reuse cached place enrichments across runs.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "incrementalUpdate",
+      "type": "boolean",
+      "description": "Refresh cached entries as new data arrives.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "streamResults",
+      "type": "boolean",
+      "description": "Enable result streaming hooks during the run.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "cache",
+      "type": "object",
+      "description": "Optional cache backend tuning.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "placeIds",
+      "type": "array",
+      "description": "Optional Google Maps place IDs for direct detail scraping.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "placeUrls",
+      "type": "array",
+      "description": "Optional Google Maps place URLs for direct detail scraping.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "exportFormat",
+      "type": "string",
+      "description": "Optional downstream export preference used by local helpers.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "compressOutput",
+      "type": "boolean",
+      "description": "Optional downstream export flag for local helpers.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "saveSearchResults",
+      "type": "boolean",
+      "description": "Save list-view places to the search-results dataset for later direct-detail runs.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "n8nEvent",
+      "type": "object",
+      "description": "Optional raw n8n workflow event input.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "n8nFieldMapping",
+      "type": "object",
+      "description": "Optional mapping from incoming n8n fields to canonical Actor input fields.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "n8nPromptMaxBytes",
+      "type": "integer",
+      "description": "Maximum bytes copied into the synthesized n8n prompt field.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "n8nLateEventThresholdSeconds",
+      "type": "integer",
+      "description": "Treat events older than this threshold as late.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "n8nPromptField",
+      "type": "string",
+      "description": "Destination field name for the synthesized n8n prompt.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "openClaw",
+      "type": "object",
+      "description": "Optional gateway integration for forwarding scraped places.",
+      "required": false,
+      "default": null
+    }
+  ],
+  "outputs": [
+    {
+      "name": "place_name",
+      "type": "string",
+      "description": "Business or place name when available.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "address",
+      "type": "string",
+      "description": "Detected street address or location text when available.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "website",
+      "type": "string",
+      "description": "Business website URL when available.",
+      "required": false,
+      "default": null
+    },
+    {
+      "name": "rating",
+      "type": "number",
+      "description": "Google Maps rating when available.",
+      "required": false,
+      "default": null
+    }
+  ],
+  "generated_by": "Hermes Skill Builder for Apify & APIs",
+  "readiness": {
+    "level": "validated",
+    "canRunDirectly": true,
+    "reason": "Actor slug and meaningful Apify metadata were detected, but the input schema is not fully verified.",
+    "missing": [
+      "confirmed required fields"
+    ]
+  },
+  "tool_call_contract": "tool_call_contract.json",
+  "schema_verified": true,
+  "source_metadata_type": "apify_api",
+  "conditionalRequirements": [],
+  "conditionalOnlyFields": [],
+  "defaultMode": "fast",
+  "fieldClassification": {
+    "basicUserFields": [
+      "searchQueries",
+      "location",
+      "categories",
+      "minRating",
+      "targetCategory",
+      "maxPlaces",
+      "maxResults",
+      "mode",
+      "includeReviews"
+    ],
+    "userFacingFields": [
+      "searchQueries",
+      "location",
+      "categories",
+      "minRating",
+      "targetCategory",
+      "maxPlaces",
+      "maxResults",
+      "mode",
+      "includeReviews"
+    ],
+    "advancedFields": [
+      "geolocation",
+      "customGeolocation",
+      "useProxy",
+      "maxConcurrency",
+      "detailsConcurrency",
+      "enableDetailsConcurrencyOverride",
+      "contactEnrichmentConcurrency",
+      "navigationTimeout"
+    ],
+    "internalFields": [],
+    "highCostFields": [
+      "maxPlaces",
+      "maxProfiles",
+      "maxEnrichments",
+      "maxResults",
+      "maxRunTimeSec",
+      "maxCrawledPlacesPerSearch",
+      "enableEnrichment",
+      "includePlaceDetails",
+      "includeEnrichment",
+      "includeReviews",
+      "useProxy",
+      "maxConcurrency",
+      "detailsConcurrency",
+      "enableDetailsConcurrencyOverride",
+      "contactEnrichmentConcurrency",
+      "rateLimit",
+      "maxDetailsToFetch",
+      "n8nPromptMaxBytes"
+    ],
+    "conditionalOnlyFields": [],
+    "agentDefaultFields": [
+      "location",
+      "maxPlaces",
+      "maxResults",
+      "mode"
+    ],
+    "askOnlyIfNeededFields": [
+      "geolocation",
+      "customGeolocation",
+      "useProxy",
+      "maxConcurrency",
+      "detailsConcurrency",
+      "enableDetailsConcurrencyOverride",
+      "contactEnrichmentConcurrency",
+      "navigationTimeout",
+      "maxProfiles",
+      "maxEnrichments",
+      "maxRunTimeSec",
+      "maxCrawledPlacesPerSearch",
+      "enableEnrichment",
+      "includePlaceDetails",
+      "includeEnrichment",
+      "rateLimit",
+      "maxDetailsToFetch",
+      "n8nPromptMaxBytes"
+    ]
+  },
+  "agentInteractionPolicy": {
+    "defaultMode": "fast",
+    "conditionalOnlyFields": [],
+    "defaultAskFields": [
+      "location",
+      "maxPlaces",
+      "maxResults",
+      "mode"
+    ],
+    "doNotAskFields": [],
+    "askOnlyIfNeededFields": [
+      "geolocation",
+      "customGeolocation",
+      "useProxy",
+      "maxConcurrency",
+      "detailsConcurrency",
+      "enableDetailsConcurrencyOverride",
+      "contactEnrichmentConcurrency",
+      "navigationTimeout",
+      "maxProfiles",
+      "maxEnrichments",
+      "maxRunTimeSec",
+      "maxCrawledPlacesPerSearch",
+      "enableEnrichment",
+      "includePlaceDetails",
+      "includeEnrichment",
+      "rateLimit",
+      "maxDetailsToFetch",
+      "n8nPromptMaxBytes"
+    ],
+    "warnBeforeUsingFields": [
+      "maxPlaces",
+      "maxProfiles",
+      "maxEnrichments",
+      "maxResults",
+      "maxRunTimeSec",
+      "maxCrawledPlacesPerSearch",
+      "enableEnrichment",
+      "includePlaceDetails",
+      "includeEnrichment",
+      "includeReviews",
+      "useProxy",
+      "maxConcurrency",
+      "detailsConcurrency",
+      "enableDetailsConcurrencyOverride",
+      "contactEnrichmentConcurrency",
+      "rateLimit",
+      "maxDetailsToFetch",
+      "n8nPromptMaxBytes"
+    ]
+  },
+  "costSafetyProfile": {
+    "riskLevel": "high",
+    "defaultMode": "fast",
+    "recommendedTestInput": {
+      "maxPlaces": 5,
+      "maxResults": 5,
+      "includeReviews": 0
+    },
+    "safeDefaults": {
+      "maxPlaces": 5,
+      "maxResults": 5,
+      "includeReviews": 0
+    },
+    "highCostFields": [
+      "maxPlaces",
+      "maxProfiles",
+      "maxEnrichments",
+      "maxResults",
+      "maxRunTimeSec",
+      "maxCrawledPlacesPerSearch",
+      "enableEnrichment",
+      "includePlaceDetails",
+      "includeEnrichment",
+      "includeReviews",
+      "useProxy",
+      "maxConcurrency",
+      "detailsConcurrency",
+      "enableDetailsConcurrencyOverride",
+      "contactEnrichmentConcurrency",
+      "rateLimit",
+      "maxDetailsToFetch",
+      "n8nPromptMaxBytes"
+    ],
+    "agentGuidance": [
+      "Start with a small maxPlaces, maxItems, or maxResults value for test runs.",
+      "Disable review scraping unless explicitly requested.",
+      "Disable website enrichment for first validation runs.",
+      "Use async runs for large jobs."
+    ]
+  }
+}

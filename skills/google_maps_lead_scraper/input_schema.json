@@ -1,0 +1,638 @@
+{
+  "title": "🗺️ Google Maps Lead Scraper",
+  "type": "object",
+  "schemaVersion": 1,
+  "additionalProperties": false,
+  "description": "Search Google Maps and export lead-ready business data. Provide either searchQueries with location, a customGeolocation, direct placeIds, or direct placeUrls.",
+  "properties": {
+    "searchQueries": {
+      "title": "🔎 Search queries",
+      "type": "array",
+      "description": "One Google Maps search term per item, for example dentist or dental clinic.",
+      "editor": "stringList",
+      "prefill": [
+        "dentist"
+      ],
+      "sectionCaption": "📍 Search setup",
+      "sectionDescription": "Choose what to search for and where the Actor should search."
+    },
+    "searchQueriesText": {
+      "title": "📝 Bulk search queries text",
+      "type": "string",
+      "description": "Optional newline- or comma-separated search queries. The Actor normalizes this into searchQueries before the crawl starts.",
+      "editor": "textarea"
+    },
+    "location": {
+      "title": "📍 Where should we search?",
+      "type": "string",
+      "description": "Enter a city, region, or country. Example: Berlin, Germany. This stays a standard Google Maps text search unless you also provide geolocation fields or a custom geolocation.",
+      "editor": "textfield",
+      "prefill": "Berlin, Germany",
+      "minLength": 2,
+      "maxLength": 120,
+      "pattern": "^(?=.*\\S).{2,120}$"
+    },
+    "geolocation": {
+      "title": "🧭 Geolocation parameters",
+      "type": "object",
+      "description": "Optional OpenStreetMap/Nominatim fields for more precise matching than free-text location alone.",
+      "editor": "schemaBased",
+      "additionalProperties": false,
+      "properties": {
+        "country": {
+          "title": "🌍 Country",
+          "type": "string",
+          "description": "Optional country name for OpenStreetMap matching, for example Germany or United States.",
+          "editor": "textfield",
+          "maxLength": 80
+        },
+        "state": {
+          "title": "🧭 State or region",
+          "type": "string",
+          "description": "Optional state, province, or region.",
+          "editor": "textfield",
+          "maxLength": 80
+        },
+        "county": {
+          "title": "📌 County",
+          "type": "string",
+          "description": "Optional county or district name.",
+          "editor": "textfield",
+          "maxLength": 80
+        },
+        "city": {
+          "title": "🏙️ City",
+          "type": "string",
+          "description": "Optional city or municipality name.",
+          "maxLength": 80
+        },
+        "postalCode": {
+          "title": "🏷️ Postal code",
+          "type": "string",
+          "description": "Optional ZIP or postal code for more precise matching.",
+          "editor": "textfield",
+          "maxLength": 20
+        }
+      }
+    },
+    "expandAreaWhenResultsLow": {
+      "title": "🗺️ Expand area when results are low",
+      "type": "boolean",
+      "description": "Keep the normal text search first, then explore nearby map areas only if the first search page returns a sparse result set.",
+      "editor": "checkbox",
+      "default": false
+    },
+    "customGeolocation": {
+      "title": "📐 Custom geolocation",
+      "type": "object",
+      "description": "Optional geometry override for direct point or polygon targeting.",
+      "editor": "schemaBased",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "title": "🔷 Geometry type",
+          "type": "string",
+          "description": "GeoJSON geometry type to use for the custom geolocation.",
+          "editor": "select",
+          "enum": [
+            "Polygon",
+            "MultiPolygon",
+            "Point"
+          ]
+        },
+        "coordinates": {
+          "title": "📍 Coordinates",
+          "type": "array",
+          "description": "GeoJSON-style coordinates. Use coordinatesJson when editing raw JSON is easier.",
+          "editor": "json"
+        },
+        "radiusKm": {
+          "title": "📏 Radius in km",
+          "type": "number",
+          "description": "Radius around the point when type is Point.",
+          "minimum": 0
+        },
+        "latitude": {
+          "title": "↕️ Latitude",
+          "type": "number",
+          "description": "Latitude used when passing a point as latitude and longitude instead of coordinates.",
+          "minimum": -90,
+          "maximum": 90
+        },
+        "longitude": {
+          "title": "↔️ Longitude",
+          "type": "number",
+          "description": "Longitude used when passing a point as latitude and longitude instead of coordinates.",
+          "minimum": -180,
+          "maximum": 180
+        },
+        "coordinatesJson": {
+          "title": "🧾 Coordinates JSON",
+          "type": "string",
+          "description": "Raw JSON string for GeoJSON coordinates.",
+          "editor": "textarea"
+        }
+      }
+    },
+    "categories": {
+      "title": "✅ Included categories",
+      "type": "array",
+      "description": "Optional include filter for Google Maps business categories.",
+      "editor": "stringList",
+      "sectionCaption": "🎯 Lead filters",
+      "sectionDescription": "Keep the output focused on the business types you want."
+    },
+    "excludedCategories": {
+      "title": "🚫 Excluded categories",
+      "type": "array",
+      "description": "Optional exclude filter for categories you do not want in the final dataset.",
+      "editor": "stringList"
+    },
+    "minRating": {
+      "title": "⭐ Minimum rating",
+      "type": "number",
+      "description": "Optional minimum Google rating.",
+      "editor": "number",
+      "minimum": 0,
+      "maximum": 5
+    },
+    "businessStatus": {
+      "title": "🏢 Business status",
+      "type": "string",
+      "description": "Filter by open or closed status when Google Maps exposes it.",
+      "editor": "select",
+      "default": "any",
+      "enum": [
+        "any",
+        "open_now",
+        "exclude_temporarily_closed",
+        "exclude_permanently_closed"
+      ],
+      "enumTitles": [
+        "Any",
+        "Open now only",
+        "Exclude temporarily closed",
+        "Exclude permanently closed"
+      ]
+    },
+    "targetCategory": {
+      "title": "📈 Target category",
+      "type": "string",
+      "description": "Optional category hint used to boost opportunity scoring.",
+      "editor": "textfield",
+      "minLength": 2,
+      "maxLength": 80
+    },
+    "maxPlaces": {
+      "title": "📦 Maximum dataset items",
+      "type": "integer",
+      "description": "Stop when this many valid places have been pushed to the dataset.",
+      "editor": "number",
+      "default": 50,
+      "minimum": 1,
+      "maximum": 100000
+    },
+    "maxProfiles": {
+      "title": "👤 Maximum profiles to open",
+      "type": "integer",
+      "description": "Hard cap for successfully opened Google Maps profile pages in deep mode.",
+      "editor": "number",
+      "default": 30,
+      "minimum": 0,
+      "maximum": 100000
+    },
+    "maxEnrichments": {
+      "title": "💳 Maximum enrichments",
+      "type": "integer",
+      "description": "Hard cap for website contact-enrichment attempts in deep mode.",
+      "editor": "number",
+      "default": 20,
+      "minimum": 0,
+      "maximum": 100000
+    },
+    "maxResults": {
+      "title": "🛑 Maximum processed results",
+      "type": "integer",
+      "description": "Optional secondary cap. If both maxPlaces and maxResults are set, the lower limit wins.",
+      "editor": "number",
+      "default": 50,
+      "minimum": 1,
+      "maximum": 100000
+    },
+    "maxRunTimeSec": {
+      "title": "⏰ Maximum runtime in seconds",
+      "type": "integer",
+      "description": "Stop the run once this runtime budget is exceeded to prevent excessive cost.",
+      "editor": "number",
+      "default": 120,
+      "minimum": 1,
+      "maximum": 3600
+    },
+    "maxCrawledPlacesPerSearch": {
+      "title": "🔢 Maximum crawled places per search",
+      "type": "integer",
+      "description": "Optional cap per search query before filtering and post-processing.",
+      "editor": "number",
+      "minimum": 1,
+      "maximum": 100000
+    },
+    "mode": {
+      "title": "🏎️ Execution mode",
+      "type": "string",
+      "description": "Fast mode is list-only and cheapest. Deep mode allows profile opening and enrichment with strict caps.",
+      "editor": "select",
+      "default": "fast",
+      "enum": [
+        "fast",
+        "deep"
+      ],
+      "enumTitles": [
+        "Fast",
+        "Deep"
+      ],
+      "sectionCaption": "💰 Profit controls",
+      "sectionDescription": "Use these caps to keep cost bounded and align premium work with premium pricing."
+    },
+    "openProfiles": {
+      "title": "🔓 Open profiles",
+      "type": "boolean",
+      "description": "Allow profile-page opening in deep mode. Forced off in fast mode.",
+      "editor": "checkbox",
+      "default": false
+    },
+    "enableEnrichment": {
+      "title": "🧪 Enable enrichment",
+      "type": "boolean",
+      "description": "Allow website contact enrichment in deep mode. Forced off in fast mode.",
+      "editor": "checkbox",
+      "default": false
+    },
+    "leadMode": {
+      "title": "✨ Lead mode",
+      "type": "boolean",
+      "description": "Legacy convenience toggle that switches the Actor into deep mode with profiles and enrichment enabled.",
+      "editor": "checkbox",
+      "default": false,
+      "sectionCaption": "✨ Enrichment",
+      "sectionDescription": "Turn on richer place data, website contact discovery, and lead scoring."
+    },
+    "includePlaceDetails": {
+      "title": "🗂️ Include place details",
+      "type": "boolean",
+      "description": "Legacy compatibility flag. In production flows, prefer openProfiles plus mode.",
+      "editor": "checkbox",
+      "default": false
+    },
+    "includeContacts": {
+      "title": "📬 Include contacts",
+      "type": "boolean",
+      "description": "Visit each business website and extract public contact details.",
+      "editor": "checkbox",
+      "default": false
+    },
+    "includeEnrichment": {
+      "title": "🧠 Include lead enrichment",
+      "type": "boolean",
+      "description": "Add lead-prioritization fields for downstream sales workflows.",
+      "editor": "checkbox",
+      "default": false
+    },
+    "generateIcebreakers": {
+      "title": "💬 Generate icebreakers",
+      "type": "boolean",
+      "description": "Reserved AI-friendly toggle for downstream workflows.",
+      "editor": "checkbox",
+      "default": false
+    },
+    "includeReviews": {
+      "title": "📝 Include reviews",
+      "type": "boolean",
+      "description": "Collect Google reviews for deeper research.",
+      "editor": "checkbox",
+      "default": false
+    },
+    "includeImages": {
+      "title": "🖼️ Include images",
+      "type": "boolean",
+      "description": "Collect place image metadata when available.",
+      "editor": "checkbox",
+      "default": false
+    },
+    "includeReviewerNames": {
+      "title": "🙍 Include reviewer names",
+      "type": "boolean",
+      "description": "When false, review outputs omit reviewer names.",
+      "editor": "checkbox"
+    },
+    "minimalLogging": {
+      "title": "🤫 Minimal logging",
+      "type": "boolean",
+      "description": "Reduce place titles, full addresses, and full URLs in logs.",
+      "editor": "checkbox"
+    },
+    "useProxy": {
+      "title": "🛡️ Use Apify Proxy",
+      "type": "boolean",
+      "description": "Recommended for better reliability on Google Maps.",
+      "editor": "checkbox",
+      "default": true,
+      "sectionCaption": "⚙️ Runtime and proxy",
+      "sectionDescription": "Tune reliability, throughput, and timeouts for local and cloud runs."
+    },
+    "maxConcurrency": {
+      "title": "⚡ Maximum concurrency",
+      "type": "integer",
+      "description": "Overall browser concurrency for the crawl.",
+      "editor": "number",
+      "default": 2,
+      "minimum": 1,
+      "maximum": 50
+    },
+    "detailsConcurrency": {
+      "title": "🧵 Details concurrency override",
+      "type": "integer",
+      "description": "Optional separate concurrency for detail-page work when enableDetailsConcurrencyOverride is true.",
+      "editor": "number",
+      "minimum": 1,
+      "maximum": 10
+    },
+    "enableDetailsConcurrencyOverride": {
+      "title": "🎚️ Enable details concurrency override",
+      "type": "boolean",
+      "description": "Use detailsConcurrency instead of maxConcurrency for detail pages.",
+      "editor": "checkbox"
+    },
+    "contactEnrichmentConcurrency": {
+      "title": "🌐 Contact enrichment concurrency",
+      "type": "integer",
+      "description": "Optional separate concurrency for website contact enrichment.",
+      "editor": "number",
+      "minimum": 1,
+      "maximum": 20
+    },
+    "rateLimit": {
+      "title": "⏱️ Rate limit mode",
+      "type": "string",
+      "description": "Pick a crawl pacing strategy.",
+      "editor": "select",
+      "enum": [
+        "adaptive",
+        "conservative",
+        "moderate",
+        "aggressive"
+      ],
+      "default": "adaptive"
+    },
+    "navigationTimeout": {
+      "title": "⏳ Navigation timeout in seconds",
+      "type": "integer",
+      "description": "Increase if Google Maps or target websites are slow.",
+      "editor": "number",
+      "default": 90,
+      "minimum": 10,
+      "maximum": 300
+    },
+    "maxDetailsToFetch": {
+      "title": "🚪 Maximum detail pages to open",
+      "type": "integer",
+      "description": "Optional cap for detail-page enrichment.",
+      "editor": "number",
+      "minimum": 1,
+      "maximum": 1000
+    },
+    "runMode": {
+      "title": "💾 Run mode",
+      "type": "string",
+      "description": "Use fresh for a baseline and incremental for new or changed businesses only.",
+      "editor": "select",
+      "default": "fresh",
+      "enum": [
+        "fresh",
+        "incremental"
+      ]
+    },
+    "detectUpdates": {
+      "title": "🔁 Detect updates",
+      "type": "boolean",
+      "description": "When incremental mode is enabled, compare current results with saved state.",
+      "editor": "checkbox",
+      "default": true
+    },
+    "stateKey": {
+      "title": "🗃️ State key",
+      "type": "string",
+      "description": "Key-value store record used for incremental state.",
+      "editor": "textfield",
+      "default": "places-state"
+    },
+    "resetState": {
+      "title": "♻️ Reset saved state",
+      "type": "boolean",
+      "description": "Delete the saved incremental snapshot before the run starts.",
+      "editor": "checkbox",
+      "default": false
+    },
+    "dedupeStrategy": {
+      "title": "🧩 Dedupe strategy",
+      "type": "string",
+      "description": "Choose how recurring runs identify the same business.",
+      "editor": "select",
+      "enum": [
+        "placeId",
+        "hash"
+      ]
+    },
+    "updateFields": {
+      "title": "📋 Tracked update fields",
+      "type": "array",
+      "description": "Fields compared between runs to detect updates.",
+      "editor": "stringList"
+    },
+    "enableCaching": {
+      "title": "🚀 Enable caching",
+      "type": "boolean",
+      "description": "Reuse cached place enrichments across runs.",
+      "editor": "checkbox"
+    },
+    "incrementalUpdate": {
+      "title": "🔄 Incremental cache updates",
+      "type": "boolean",
+      "description": "Refresh cached entries as new data arrives.",
+      "editor": "checkbox"
+    },
+    "streamResults": {
+      "title": "📡 Stream results",
+      "type": "boolean",
+      "description": "Enable result streaming hooks during the run.",
+      "editor": "checkbox"
+    },
+    "cache": {
+      "title": "🧰 Cache configuration",
+      "type": "object",
+      "description": "Optional cache backend tuning.",
+      "editor": "schemaBased",
+      "additionalProperties": false,
+      "properties": {
+        "redisUrl": {
+          "title": "🔗 Redis URL",
+          "type": "string",
+          "description": "Optional Redis connection string for persistent cache storage."
+        },
+        "namespace": {
+          "title": "🧱 Namespace",
+          "type": "string",
+          "description": "Namespace prefix for cache keys."
+        },
+        "ttlSeconds": {
+          "title": "⏲️ TTL in seconds",
+          "type": "integer",
+          "description": "Time-to-live for cache entries.",
+          "minimum": 1,
+          "maximum": 604800
+        },
+        "maxKeys": {
+          "title": "🔐 Maximum keys",
+          "type": "integer",
+          "description": "Limit the in-memory cache size.",
+          "minimum": 1,
+          "maximum": 50000
+        }
+      }
+    },
+    "placeIds": {
+      "title": "🆔 Direct place IDs",
+      "type": "array",
+      "description": "Optional Google Maps place IDs for direct detail scraping.",
+      "editor": "stringList",
+      "sectionCaption": "📍 Direct place input",
+      "sectionDescription": "Use one of these instead of a search query when you already know the places you want."
+    },
+    "placeUrls": {
+      "title": "🔗 Direct place URLs",
+      "type": "array",
+      "description": "Optional Google Maps place URLs for direct detail scraping.",
+      "editor": "stringList"
+    },
+    "exportFormat": {
+      "title": "📤 Export format hint",
+      "type": "string",
+      "description": "Optional downstream export preference used by local helpers.",
+      "editor": "select",
+      "enum": [
+        "json",
+        "csv",
+        "excel"
+      ]
+    },
+    "compressOutput": {
+      "title": "🗜️ Compress output",
+      "type": "boolean",
+      "description": "Optional downstream export flag for local helpers.",
+      "editor": "checkbox"
+    },
+    "saveSearchResults": {
+      "title": "💽 Save search-results dataset",
+      "type": "boolean",
+      "description": "Save list-view places to the search-results dataset for later direct-detail runs.",
+      "editor": "checkbox"
+    },
+    "n8nEvent": {
+      "title": "🔔 n8n event payload",
+      "type": "object",
+      "description": "Optional raw n8n workflow event input.",
+      "editor": "json"
+    },
+    "n8nFieldMapping": {
+      "title": "🧭 n8n field mapping",
+      "type": "object",
+      "description": "Optional mapping from incoming n8n fields to canonical Actor input fields.",
+      "editor": "json"
+    },
+    "n8nPromptMaxBytes": {
+      "title": "📏 n8n prompt max bytes",
+      "type": "integer",
+      "description": "Maximum bytes copied into the synthesized n8n prompt field.",
+      "editor": "number",
+      "minimum": 1
+    },
+    "n8nLateEventThresholdSeconds": {
+      "title": "⏰ n8n late-event threshold seconds",
+      "type": "integer",
+      "description": "Treat events older than this threshold as late.",
+      "editor": "number",
+      "minimum": 0
+    },
+    "n8nPromptField": {
+      "title": "📝 n8n prompt field",
+      "type": "string",
+      "description": "Destination field name for the synthesized n8n prompt.",
+      "editor": "textfield"
+    },
+    "openClaw": {
+      "title": "🦞 OpenClaw integration",
+      "type": "object",
+      "description": "Optional gateway integration for forwarding scraped places.",
+      "editor": "schemaBased",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "title": "✅ Enabled",
+          "type": "boolean",
+          "description": "Forward scraped places to the OpenClaw gateway."
+        },
+        "gatewayUrl": {
+          "title": "🌉 Gateway URL",
+          "type": "string",
+          "description": "Base URL of the OpenClaw gateway."
+        },
+        "token": {
+          "title": "🔐 Gateway token",
+          "type": "string",
+          "description": "Optional OpenClaw token. Prefer environment variables or Apify secrets for production runs.",
+          "editor": "textfield"
+        },
+        "agentId": {
+          "title": "🤖 Agent ID",
+          "type": "string",
+          "description": "Agent identifier used by the gateway."
+        },
+        "concurrency": {
+          "title": "⚡ Concurrency",
+          "type": "integer",
+          "description": "Maximum number of in-flight gateway requests.",
+          "minimum": 1,
+          "maximum": 20
+        },
+        "sendMode": {
+          "title": "📨 Send mode",
+          "type": "string",
+          "description": "Send each place immediately or in batches.",
+          "editor": "select",
+          "enum": [
+            "perPlace",
+            "batch"
+          ]
+        },
+        "batchSize": {
+          "title": "📦 Batch size",
+          "type": "integer",
+          "description": "Batch size when sendMode is batch.",
+          "minimum": 1
+        },
+        "api": {
+          "title": "🧪 API",
+          "type": "string",
+          "description": "OpenAI-compatible API surface exposed by the gateway.",
+          "editor": "select",
+          "enum": [
+            "responses",
+            "chatCompletions"
+          ]
+        }
+      }
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "x_schema_source": "apify_actor_metadata",
+  "x_verified": true
+}

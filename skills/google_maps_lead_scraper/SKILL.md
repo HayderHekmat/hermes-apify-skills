@@ -1,6 +1,6 @@
 ---
-name: fast_google_maps_scraper
-description: "HTTP-first Google Maps leads with scoring"
+name: google_maps_lead_scraper
+description: "Turn Google Maps into an automated sales machine"
 version: 1.0.0
 author: Hermes Skill Builder
 license: NOASSERTION
@@ -18,34 +18,28 @@ metadata:
     requires_toolsets: []
     requires_tools: []
 ---
-# Fast Google Maps Scraper
+# Google Maps Lead Scraper
 
-Skill package: `fast_google_maps_scraper`
+Skill package: `google_maps_lead_scraper`
 
 ## What This Skill Does
 
-HTTP-first Google Maps scraper for search listings, place details, reviews, lead scoring, and optional website enrichment.
+Turn Google Maps into an automated sales machine. Identify high-value prospects with built-in lead scoring and contact extraction. Our unique 'Monitor' technology ensures you never scrape the same business twice, delivering fresh, high-intent leads directly to your workflow every day.
 
 This skill is Hermes-ready and designed for Hermes Agent skill workflows. It is also compatible with skill-style agent systems that read markdown instructions, a manifest, and a JSON input schema.
 
 ## When To Use It
 
-- Fast Google Maps Scraper
-- Low-cost prospecting and lead generation from Google Maps business listings.
-- Building lists of businesses with names, ratings, categories, addresses, coordinates, and place identifiers.
-- Fetching full place details for lead qualification and outreach prioritization.
-- Collecting and analyzing customer reviews for sentiment, volume, and per-place review datasets.
-- Enriching business websites to extract emails, social links, page titles, and contact pages for outreach.
-- Targeted local searches using city/country, structured geolocation fields, custom lat/long anchors, radius or GeoJSON points.
+- Google Maps Lead Scraper
+- Recurring market intelligence: schedule baseline and incremental scans to emit only net-new or changed businesses for ongoing monitoring.
+- Lead prioritization and routing: generate ranked, scored lead lists and actionable contact enrichment (emails, contact forms, social links) for outreach sequencing.
 
 ## Inputs Expected From Normal Users
 
-- `mode` (string) - list searches only and is cheapest; place scrapes one known place ID; search lists places, fetches details, and optionally reviews.
-- `query` (string) - Business/category query, for example 'dentists' or 'coffee shops'. Required for list and search mode.
-- `searchLocation` (string) - Free-form location such as Berlin, Germany. Used together with the search query.
-- `maxPlaces` (integer) - Maximum number of search results to list or fully scrape.
-- `maxReviews` (integer) - Maximum reviews to fetch for each place. Set to 0 to skip reviews.
-- `enrichWebsites` (boolean) - Fetch listed websites to extract title, description, emails, and social links.
+- `location` (string) - Enter a city, region, or country. Example: Berlin, Germany. This stays a standard Google Maps text search unless you also provide geolocation fields or a custom geolocation.
+- `maxPlaces` (integer) - Stop when this many valid places have been pushed to the dataset.
+- `maxResults` (integer) - Optional secondary cap. If both maxPlaces and maxResults are set, the lower limit wins.
+- `mode` (string) - Fast mode is list-only and cheapest. Deep mode allows profile opening and enrichment with strict caps.
 - Advanced, internal, and cost-sensitive fields remain available in `input_schema.json`, but the agent should not ask about them by default.
 
 ## Output Expected
@@ -70,13 +64,13 @@ Common record fields:
 
 ## How This Skill Calls The Apify Actor
 
-- Actor slug: `solutionssmart/fast-google-map-scraper`
+- Actor slug: `solutionssmart/google-maps-lead-scraper`
 - Required secret: `APIFY_TOKEN`
-- Start run endpoint: `https://api.apify.com/v2/acts/solutionssmart~fast-google-map-scraper/runs`
-- Run-sync endpoint: `https://api.apify.com/v2/acts/solutionssmart~fast-google-map-scraper/run-sync-get-dataset-items`
+- Start run endpoint: `https://api.apify.com/v2/acts/solutionssmart~google-maps-lead-scraper/runs`
+- Run-sync endpoint: `https://api.apify.com/v2/acts/solutionssmart~google-maps-lead-scraper/run-sync-get-dataset-items`
 - Expected result: dataset items from the default dataset
 - Input schema source: `apify_actor_metadata`
-- Readiness level: `executable`
+- Readiness level: `validated`
 
 ## Before Running
 
@@ -90,13 +84,11 @@ Common record fields:
 
 Always-required fields:
 
-- `mode`
+- No always-required fields were confirmed.
 
 Conditional requirements depend on the selected mode, action, operation, or task:
 
-- When `mode` = `search`: require `query`, `searchLocation`. Search and list modes require a business/category query and a target location.
-- When `mode` = `list`: require `query`, `searchLocation`. Search and list modes require a business/category query and a target location.
-- When `mode` = `place`: require `placeId`. Place/detail mode requires a known place ID.
+- No high-confidence conditional requirements were inferred.
 
 
 ## Field Guidance For Agents
@@ -105,36 +97,36 @@ By default, the agent should only ask about agentDefaultFields. Advanced fields 
 
 ### Default Workflow
 
-- Default mode: `search`
-- Ask first: `mode`, `query`, `searchLocation`, `maxPlaces`, `maxReviews`, `enrichWebsites`
+- Default mode: `fast`
+- Ask first: `location`, `maxPlaces`, `maxResults`, `mode`
 
 ### Ask The User First
 
-`mode`, `query`, `searchLocation`, `maxPlaces`, `maxReviews`, `enrichWebsites`
+`location`, `maxPlaces`, `maxResults`, `mode`
 
 ### Conditional-Only Fields
 
-`placeId`
+none
 
 These fields are valid and user-facing, but they should not be requested by default. Ask for them only when the user selects a mode, action, or operation that requires them.
 
-`placeId` should only be requested when the user chooses `mode` = `place` or asks to scrape a known Google Maps place by ID.
+Apply `conditionalRequirements` before asking for these fields.
 
 ### Ask Only If Needed
 
-`outputMode`, `geolocationParameters`, `customGeolocation`, `maxConcurrency`, `zoom`, `language`, `gl`, `delaySeconds`, `timeoutSeconds`, `proxyConfiguration`, `proxyUrl`, `websiteEnrichmentDepth`, `websiteTimeoutSeconds`
+`geolocation`, `customGeolocation`, `useProxy`, `maxConcurrency`, `detailsConcurrency`, `enableDetailsConcurrencyOverride`, `contactEnrichmentConcurrency`, `navigationTimeout`
 
 These are technical or expert options. Use them only when the user asks for advanced behavior or operational tuning.
 
 ### Do Not Ask Normal Users
 
-`enableSqliteCheckpoint`, `sqlitePath`, `enableBillingEvents`
+none
 
 These are billing, debug, storage, telemetry, or internal fields. Normal users should not be asked about them.
 
 ### Cost-Sensitive Fields
 
-`maxPlaces`, `maxReviews`, `maxTotalReviews`, `maxConcurrency`, `proxyConfiguration`, `proxyUrl`, `enrichWebsites`, `websiteEnrichmentDepth`
+`maxPlaces`, `maxProfiles`, `maxEnrichments`, `maxResults`, `maxRunTimeSec`, `maxCrawledPlacesPerSearch`, `enableEnrichment`, `includePlaceDetails`, `includeEnrichment`, `includeReviews`, `useProxy`, `maxConcurrency`, `detailsConcurrency`, `enableDetailsConcurrencyOverride`, `contactEnrichmentConcurrency`, `rateLimit`, `maxDetailsToFetch`, `n8nPromptMaxBytes`
 
 These can increase runtime, compute, memory use, scraping depth, or external requests. Warn the user before enabling or increasing them.
 
@@ -146,12 +138,9 @@ These can increase runtime, compute, memory use, scraping depth, or external req
 
 ```json
 {
-  "mode": "search",
-  "query": "coffee shops",
-  "searchLocation": "Berlin, Germany",
   "maxPlaces": 5,
-  "maxReviews": 0,
-  "enrichWebsites": false
+  "maxResults": 5,
+  "includeReviews": 0
 }
 ```
 
@@ -160,12 +149,12 @@ These can increase runtime, compute, memory use, scraping depth, or external req
 ```json
 {
   "maxPlaces": 5,
-  "maxReviews": 0,
-  "enrichWebsites": false
+  "maxResults": 5,
+  "includeReviews": 0
 }
 ```
 
-- High-cost fields: `maxPlaces`, `maxReviews`, `maxTotalReviews`, `maxConcurrency`, `proxyConfiguration`, `proxyUrl`, `enrichWebsites`, `websiteEnrichmentDepth`
+- High-cost fields: `maxPlaces`, `maxProfiles`, `maxEnrichments`, `maxResults`, `maxRunTimeSec`, `maxCrawledPlacesPerSearch`, `enableEnrichment`, `includePlaceDetails`, `includeEnrichment`, `includeReviews`, `useProxy`, `maxConcurrency`, `detailsConcurrency`, `enableDetailsConcurrencyOverride`, `contactEnrichmentConcurrency`, `rateLimit`, `maxDetailsToFetch`, `n8nPromptMaxBytes`
 
 Agent guidance:
 
@@ -191,11 +180,11 @@ Agent guidance:
 
 ## Example User Commands
 
-- "Use `fast_google_maps_scraper` to run the default workflow for this source."
-- "Generate a request for `fast_google_maps_scraper` using these parameters: ..."
-- "Validate this `fast_google_maps_scraper` input before running it."
-- "Retry the failed `fast_google_maps_scraper` operation and explain what changed."
+- "Use `google_maps_lead_scraper` to run the default workflow for this source."
+- "Generate a request for `google_maps_lead_scraper` using these parameters: ..."
+- "Validate this `google_maps_lead_scraper` input before running it."
+- "Retry the failed `google_maps_lead_scraper` operation and explain what changed."
 
 ## Integration Notes For Hermes Agent
 
-Copy this folder into `~/.hermes/skills/<category>/fast_google_maps_scraper/` or install it with `hermes skills install <url>`. Keep `SKILL.md`, `manifest.json`, and `input_schema.json` together so the agent can load the instructions and validate user input.
+Copy this folder into `~/.hermes/skills/<category>/google_maps_lead_scraper/` or install it with `hermes skills install <url>`. Keep `SKILL.md`, `manifest.json`, and `input_schema.json` together so the agent can load the instructions and validate user input.
